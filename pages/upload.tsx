@@ -4,6 +4,7 @@ import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeTo
 import { Dropzone } from '@mantine/dropzone';
 import { IconUpload, IconVideo, IconX } from '@tabler/icons';
 import { Editor } from '../components/Editor';
+import React from 'react';
 
 export default function HomePage() {
   //Boolean state handling whether upload has occured or not
@@ -60,7 +61,7 @@ export default function HomePage() {
   const renderEditor = () => {
     return (
       // videoUrl --> URL of uploaded video
-      <Editor videoUrl={videoUrl} videoBlob={videoBlob} setVideoUrl={setVideoUrl} />
+      <Editor videoUrl={videoUrl} setVideoUrl={setVideoUrl} videoBlob={videoBlob} /> //videoBlob={videoBlob}
     );
   };
 

@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'; // https://github.com/ffmpegwasm/ffmpeg.wasm/blob/master/docs/api.md
-import { ActionIcon, Center, Container, RangeSlider, Slider } from '@mantine/core';
+import { ActionIcon, Button, Center, Container, Group, RangeSlider, Slider } from '@mantine/core';
 import {
+  IconCloudUpload,
+  IconDownload,
   IconPlayerPause,
   IconPlayerPlay,
   IconPlayerSkipBack,
@@ -11,7 +13,7 @@ import eniv from '../../public/eniv.png';
 import Image from 'next/image';
 
 export { Editor };
-export default function Editor({ videoUrl, timings, setTimings }) {
+export default function Editor({ videoUrl, timings, setTimings, ...props }) {
   //Boolean state to handle video mute
   const [isMuted, setIsMuted] = useState(false);
   //Boolean state to handle whether video is playing or not
@@ -195,29 +197,42 @@ export default function Editor({ videoUrl, timings, setTimings }) {
           value={rangeValue}
           onChange={setAndUpdateRangeValue}
         />
-        <Center>
-          <ActionIcon
-            style={{ paddingRight: '0.5rem' }}
-            size="lg"
-            className="go-to-start-control"
-            title="Skip To Start"
-            onClick={skipToStart}
-          >
-            <IconPlayerSkipBack size={30} />
-          </ActionIcon>
-          <ActionIcon size="lg" className="play-control" title="Play/Pause" onClick={playPause}>
-            {playing ? <IconPlayerPause size={30} /> : <IconPlayerPlay size={30} />}
-          </ActionIcon>
-          <ActionIcon
-            style={{ paddingLeft: '0.5rem' }}
-            size="lg"
-            className="go-to-start-control"
-            title="Skip To End"
+        <Group position="apart">
+          <div style={{ visibility: 'hidden' }}>div</div>
+          <Group style={{ marginLeft: 180 }}>
+            <ActionIcon
+              style={{ paddingRight: '0.5rem' }}
+              size="lg"
+              className="go-to-start-control"
+              title="Skip To Start"
+              onClick={skipToStart}
+            >
+              <IconPlayerSkipBack size={30} />
+            </ActionIcon>
+            <ActionIcon size="lg" className="play-control" title="Play/Pause" onClick={playPause}>
+              {playing ? <IconPlayerPause size={30} /> : <IconPlayerPlay size={30} />}
+            </ActionIcon>
+            <ActionIcon
+              style={{ paddingLeft: '0.5rem' }}
+              size="lg"
+              className="go-to-start-control"
+              title="Skip To End"
+              onClick={skipToEnd}
+            >
+              <IconPlayerSkipForward size={30} />
+            </ActionIcon>
+          </Group>
+          <Button
+            size="md"
+            variant="subtle"
+            className="upload-and-complete-control"
+            title="Upload And Finish Result"
             onClick={skipToEnd}
           >
-            <IconPlayerSkipForward size={30} />
-          </ActionIcon>
-        </Center>
+            Upload to Eniv {'   '}
+            <IconCloudUpload style={{ paddingLeft: '8px' }} size={30} />
+          </Button>
+        </Group>
       </Container>
     </>
   );
