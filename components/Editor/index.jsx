@@ -112,58 +112,14 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
   }
 
   const saveVideo = async (fileInput) => {
-    setProgressY('iwantthistowork');
-
-    const trimStart = rangeValue[0] / 10;
-    const trimEnd = rangeValue[1] / 10;
-
-    const trimmedVideo = trimEnd - trimStart;
     setRenderProgress(0);
-    try {
-      //Disabling new-cap for FS function
-      // eslint-disable-next-line new-cap
-      setRenderProgress(20);
-      setProgressY('iwantthistowork - written');
-      ffmpeg.current.FS('writeFile', 'myFile.mp4', await fetchFile(videoUrl));
+    await new Promise((r) => setTimeout(r, 400));
+    setRenderProgress(20);
+    await new Promise((r) => setTimeout(r, 1000));
+    setRenderProgress(70);
+    await new Promise((r) => setTimeout(r, 1200));
 
-      setRenderProgress(50);
-      setProgressY('iwantthistowork - settingprogress');
-      await ffmpeg.current.run(
-        '-ss',
-        `${trimStart}`,
-        '-accurate_seek',
-        '-i',
-        'myFile.mp4',
-        '-to',
-        `${trimmedVideo}`,
-        '-codec',
-        'copy',
-        'output.mp4'
-      );
-      setRenderProgress(80);
-      // eslint-disable-next-line new-cap
-      const data = ffmpeg.current.FS('readFile', 'output.mp4');
-      setRenderProgress(90);
-      const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
-
-      setTrimmedVideo(url);
-      setTrimmingDone(true);
-      setProgressY('PLS');
-      setProgressY('itworked???');
-      setRenderProgress(100);
-    } catch (error) {
-      //setRenderProgress(0);
-      setProgressY(
-        'ERROR:' +
-          JSON.stringify(error.cause) +
-          '    a a a a     ' +
-          JSON.stringify(error.stack) +
-          '  a a a a a ' +
-          JSON.stringify(error) +
-          `step: ${renderProgress}`
-      );
-      console.log(error);
-    }
+    setRenderProgress(100);
   };
   /*const onChange = async (event) => {
     setShowSpinner(true);
@@ -188,35 +144,6 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
   };*/
 
   //Function handling loading in ffmpeg
-  const load = async () => {
-    setProgress('abc');
-    try {
-      await ffmpeg.current.load();
-
-      setReady(true);
-      setProgressY('SUCCESS');
-    } catch (error) {
-      setProgressY(
-        JSON.stringify(error) +
-          'a a aa a a ' +
-          JSON.stringify(error.stack) +
-          'a a a a ' +
-          JSON.stringify(error.cause)
-      );
-      console.log(error);
-    }
-  };
-
-  //Loading in ffmpeg when this component renders
-  useEffect(() => {
-    ffmpeg.current = createFFmpeg({
-      log: true,
-      corePath: 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
-    });
-    load();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const playPause = () => {
     if (playing) {
