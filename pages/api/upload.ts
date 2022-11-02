@@ -2,11 +2,11 @@ import cloudinary from 'cloudinary';
 import { IncomingForm } from 'formidable';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-cloudinary.config({
+/*cloudinary.config({
   cloud_name: 'disniioii',
   api_key: '983597853818463',
   api_secret: '0zt0vFJLfxbewsTIeN5sERUaAgc',
-});
+});*/
 
 export const config = {
   api: {
