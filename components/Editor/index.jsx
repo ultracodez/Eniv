@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'; // https://github.com/ffmpegwasm/ffmpeg.wasm/blob/master/docs/api.md
 import {
   ActionIcon,
   Button,
@@ -53,12 +52,6 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
     // setProgress(progPercent);
     //playVideoRef.current.currentTime = 76 * progPercent;
   }
-
-  //Boolean state handling whether ffmpeg has loaded or not
-  const [ready, setReady] = useState(false);
-
-  //Ref to handle the current instance of ffmpeg when loaded
-  const ffmpeg = useRef(null);
 
   const [trimStart, setTrimStart] = useState(0);
   const [trimEnd, setTrimEnd] = useState(100);
@@ -142,8 +135,6 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
       setShowVideo(true);
     }
   };*/
-
-  //Function handling loading in ffmpeg
 
   const playPause = () => {
     if (playing) {
