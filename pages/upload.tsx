@@ -30,7 +30,7 @@ export default function HomePage() {
             onDrop={(file) => {
               uploadFile(file);
             }}
-            accept={['video/quicktime', 'video/mp4']}
+            accept={[/*'video/quicktime', */ 'video/mp4']}
           >
             <Group position="center" spacing="xl" style={{ minHeight: 220, pointerEvents: 'none' }}>
               <Dropzone.Accept>
