@@ -21,6 +21,8 @@ import {
 import eniv from '../../public/eniv.png';
 import Image from 'next/image';
 
+const MaxLength = 4;
+
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'; // https://github.com/ffmpegwasm/ffmpeg.wasm/blob/master/docs/api.md
 
 export { Editor };
@@ -97,7 +99,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
 
     var rRangeValue = rangeValue;
 
-    if (len > 7) {
+    if (len > MaxLength) {
       //setProgressY(oldEnd + ' : ' + end);
       if (end > oldEnd && start < oldStart) {
         //setProgressY('whaaaa');
@@ -114,13 +116,13 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
       var length = Math.round((rRangeValue[1] - rRangeValue[0]) / 10);
       //setProgressY(length + JSON.stringify(rRangeValue));
       //aka incase the length is STILL greater than 7
-      if (length > 7) {
+      if (length > MaxLength) {
         if (end > oldEnd) {
-          rRangeValue = [end * 10 - 70, end * 10];
+          rRangeValue = [end * 10 - MaxLength * 10, end * 10];
           //setProgressY('ENDNDNENEND');
         } else if (start < oldStart) {
           //setProgressY('ayuq3truehu');
-          rRangeValue = [start * 10, start * 10 + 70];
+          rRangeValue = [start * 10, start * 10 + MaxLength * 10];
         } else {
           //setProgressY(start + ' aaa ' + end);
         }
@@ -131,7 +133,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
     }
 
     setRangeValue(rRangeValue);
-    //setProgressY((rRangeValue[1] - rRangeValue[0]) / 10 < 8 ? 'true' : 'false');
+    setProgressY((rRangeValue[1] - rRangeValue[0]) / 10 < MaxLength ? 'true' : 'false');
   }
 
   const saveVideo = async (fileInput) => {
@@ -153,9 +155,9 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
       ffmpeg.current.setProgress(({ ratio }) => {
         console.log('ffmpeg progress: ', ratio);
         if (ratio < 0) {
-          setProgress(0);
+          //setProgress(0);
         }
-        setProgress(Math.round(ratio * 100));
+        //setProgress(Math.round(ratio * 100));
       });
       setRenderProgress(50);
       await ffmpeg.current.run(
@@ -243,7 +245,6 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
     <>
       {JSON.stringify(trimmedVideo)}
       wtf +{JSON.stringify(trimmedVideo)}+
-      
       <Container>
         FFMPEG LOADED? : {ready ? 'yes' : 'no'}
         <br />
