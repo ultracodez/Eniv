@@ -8,6 +8,7 @@ import {
   Progress,
   RangeSlider,
   Slider,
+  Text,
 } from '@mantine/core';
 import {
   IconCloudUpload,
@@ -20,8 +21,34 @@ import {
 import eniv from '../../public/eniv.png';
 import Image from 'next/image';
 
+import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'; // https://github.com/ffmpegwasm/ffmpeg.wasm/blob/master/docs/api.md
+
 export { Editor };
 export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props }) {
+  //Ref to handle the current instance of ffmpeg when loaded
+  const ffmpeg = useRef(null);
+  //Boolean state handling whether ffmpeg has loaded or not
+  const [ready, setReady] = useState(false);
+  //Function handling loading in ffmpeg
+  const load = async () => {
+    try {
+      await ffmpeg.current.load();
+
+      setReady(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  //Loading in ffmpeg when this component renders
+  useEffect(() => {
+    ffmpeg.current = createFFmpeg({
+      log: true,
+      corePath: 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js', //'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
+    });
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   //Boolean state to handle video mute
   const [isMuted, setIsMuted] = useState(false);
   //Boolean state to handle whether video is playing or not
@@ -36,6 +63,9 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
 
   //Ref handling the initial video element for trimming
   const playVideoRef = useRef();
+
+  //for renderProgress
+  const [progressColor, setProgressColor] = useState('violet');
 
   //State handling storing of the trimmed video
   const [trimmedVideo, setTrimmedVideo] = useState('FAILURE');
@@ -105,14 +135,25 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
   }
 
   const saveVideo = async (fileInput) => {
+    setProgressColor('violet');
     setRenderProgress(0);
     await new Promise((r) => setTimeout(r, 400));
     setRenderProgress(20);
     await new Promise((r) => setTimeout(r, 1000));
     setRenderProgress(70);
-    await new Promise((r) => setTimeout(r, 1200));
+    await new Promise((r) => setTimeout(r, 1000));
+    setRenderProgress(80);
+    await new Promise((r) => setTimeout(r, 1000));
+    setRenderProgress(85);
 
+    await new Promise((r) => setTimeout(r, 1000));
+    setProgressColor('red');
+    await new Promise((r) => setTimeout(r, 5000));
+    setRenderProgress(90);
+    setProgressColor('violet');
+    await new Promise((r) => setTimeout(r, 1200));
     setRenderProgress(100);
+    setProgressColor('green');
   };
   /*const onChange = async (event) => {
     setShowSpinner(true);
@@ -169,6 +210,8 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
       {JSON.stringify(trimmedVideo)}
       wtf +{JSON.stringify(trimmedVideo)}+
       <Container>
+        FFMPEG LOADED? : {ready ? 'yes' : 'no'}
+        <br />
         {progress}
         <br />
         {progressY}
@@ -201,7 +244,6 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
           </video>
         </Center>
         <Slider step={0.5} value={progress} onChange={setAndUpdateProgress} />
-        <Progress value={renderProgress} color="violet" />
         <RangeSlider
           step={0.1}
           min={0}
@@ -245,6 +287,10 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
             Upload to Eniv {'   '}
             <IconCloudUpload style={{ paddingLeft: '8px' }} size={30} />
           </Button>
+        </Group>
+        <Group>
+          <Text>Render Progress:</Text>
+          <Progress style={{ width: '100%' }} value={renderProgress} color={progressColor} />
         </Group>
       </Container>
     </>
