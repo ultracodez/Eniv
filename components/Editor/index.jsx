@@ -22,7 +22,7 @@ import eniv from '../../public/eniv.png';
 import Image from 'next/image';
 
 export { Editor };
-export default function Editor({ videoUrl, timings, setTimings, ...props }) {
+export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props }) {
   //Boolean state to handle video mute
   const [isMuted, setIsMuted] = useState(false);
   //Boolean state to handle whether video is playing or not
