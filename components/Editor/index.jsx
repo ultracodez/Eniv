@@ -137,23 +137,57 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
   const saveVideo = async (fileInput) => {
     setProgressColor('violet');
     setRenderProgress(0);
-    await new Promise((r) => setTimeout(r, 400));
-    setRenderProgress(20);
-    await new Promise((r) => setTimeout(r, 1000));
-    setRenderProgress(70);
-    await new Promise((r) => setTimeout(r, 1000));
-    setRenderProgress(80);
-    await new Promise((r) => setTimeout(r, 1000));
-    setRenderProgress(85);
+    const trimStart = rangeValue[0] / 10;
+    const trimEnd = rangeValue[1] / 10;
 
-    await new Promise((r) => setTimeout(r, 1000));
-    setProgressColor('red');
-    await new Promise((r) => setTimeout(r, 5000));
-    setRenderProgress(90);
-    setProgressColor('violet');
-    await new Promise((r) => setTimeout(r, 1200));
-    setRenderProgress(100);
-    setProgressColor('green');
+    const trimmedVideo = trimEnd - trimStart;
+
+    console.log('Trimmed Duration: ', trimmedVideo);
+    console.log('Trim End: ', trimEnd);
+    setRenderProgress(10);
+    try {
+      //Disabling new-cap for FS function
+      // eslint-disable-next-line new-cap
+      ffmpeg.current.FS('writeFile', 'myFile.mp4', await fetchFile(videoUrl));
+      setRenderProgress(30);
+      ffmpeg.current.setProgress(({ ratio }) => {
+        console.log('ffmpeg progress: ', ratio);
+        if (ratio < 0) {
+          setProgress(0);
+        }
+        setProgress(Math.round(ratio * 100));
+      });
+      setRenderProgress(50);
+      await ffmpeg.current.run(
+        '-ss',
+        `${trimStart}`,
+        '-accurate_seek',
+        '-i',
+        'myFile.mp4',
+        '-to',
+        `${trimmedVideo}`,
+        '-codec',
+        'copy',
+        'output.mp4'
+      );
+      setRenderProgress(70);
+      //Disabling new-cap for FS function
+      // eslint-disable-next-line new-cap
+      const data = ffmpeg.current.FS('readFile', 'output.mp4');
+      setRenderProgress(80);
+      const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
+      setRenderProgress(90);
+      setTrimmedVideo(url);
+      setTrimmingDone(true);
+      // setLottiePlaying(false)
+
+      setRenderProgress(100);
+      setProgressColor('green');
+    } catch (error) {
+      console.log(error);
+      setProgressY(JSON.stringify(error.stack));
+      setProgressColor('red');
+    }
   };
   /*const onChange = async (event) => {
     setShowSpinner(true);
@@ -209,6 +243,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
     <>
       {JSON.stringify(trimmedVideo)}
       wtf +{JSON.stringify(trimmedVideo)}+
+      
       <Container>
         FFMPEG LOADED? : {ready ? 'yes' : 'no'}
         <br />
