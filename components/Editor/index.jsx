@@ -5,12 +5,16 @@ import {
   Center,
   Container,
   Group,
+  Modal,
   Progress,
   RangeSlider,
   Slider,
   Text,
+  TextInput,
 } from '@mantine/core';
 import {
+  IconAlertCircle,
+  IconCheck,
   IconCloudUpload,
   IconDownload,
   IconPlayerPause,
@@ -24,9 +28,26 @@ import Image from 'next/image';
 const MaxLength = 4;
 
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'; // https://github.com/ffmpegwasm/ffmpeg.wasm/blob/master/docs/api.md
+import { hideNotification, showNotification } from '@mantine/notifications';
+import { useForm } from '@mantine/form';
+
+function getJsonFromUrl(url) {
+  if (!url) url = location.search;
+  var query = url.substr(1);
+  var result = {};
+  query.split('&').forEach(function (part) {
+    var item = part.split('=');
+    result[item[0]] = decodeURIComponent(item[1]);
+  });
+  return result;
+}
 
 export { Editor };
-export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props }) {
+export default function Editor({ videoUrl, /* timings, setTimings,*/ redirectUrl, ...props }) {
+  const params = getJsonFromUrl(window?.location?.search);
+
+  const [modalOpened, setModalOpened] = useState(false);
+
   //Ref to handle the current instance of ffmpeg when loaded
   const ffmpeg = useRef(null);
   //Boolean state handling whether ffmpeg has loaded or not
@@ -136,7 +157,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
     setProgressY((rRangeValue[1] - rRangeValue[0]) / 10 < MaxLength ? 'true' : 'false');
   }
 
-  const saveVideo = async (fileInput) => {
+  const saveVideo = async ({ vidTitle }) => {
     setProgressColor('violet');
     setRenderProgress(0);
     const trimStart = rangeValue[0] / 10;
@@ -177,7 +198,8 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
       // eslint-disable-next-line new-cap
       const data = ffmpeg.current.FS('readFile', 'output.mp4');
       setRenderProgress(80);
-      const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
+      var blobby = new Blob([data.buffer], { type: 'video/mp4' });
+      const url = URL.createObjectURL(blobby);
       setRenderProgress(90);
       setTrimmedVideo(url);
       setTrimmingDone(true);
@@ -185,11 +207,82 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
 
       setRenderProgress(100);
       setProgressColor('green');
+
+      showNotification({
+        id: 'uploadNot',
+        title: 'Uploading to Eniv',
+        message: ':o',
+        loading: true,
+        disallowClose: true,
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      try {
+        const formData = new FormData();
+        formData.append('inputFile', blobby);
+        formData.append('vidTitle', vidTitle);
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        const data = await response.json();
+        //setPublicId(data.public_id);
+
+        hideNotification('uploadNot');
+
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        showNotification({
+          title: 'Upload Successful',
+          message: ':)',
+          icon: <IconCheck />,
+          color: 'green',
+        });
+        setTimeout(() => {
+          if (params.rdUrl) {
+            window.location.href = params.rdUrl;
+          }
+        }, 2000);
+      } catch (error) {
+        hideNotification('uploadNot');
+
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        showNotification({
+          title: 'Upload Failed',
+          message: ':,(',
+          icon: <IconAlertCircle />,
+          color: 'red',
+        });
+        setModalSubmitButtonDisabled(false);
+      } finally {
+        setModalOpened(false);
+      }
+
+      /*event.preventDefault();
+      const formData = new FormData();
+      const file = event.target.files[0];
+      formData.append('inputFile', file);
+
+      try {
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        const data = await response.json();
+        setPublicId(data.public_id);
+      } catch (error) {
+        setShowSpinner(false);
+      } finally {
+        setShowSpinner(false);
+        setShowVideo(true);
+      }/* */
     } catch (error) {
       console.log(error);
       setProgressY(JSON.stringify(error.stack));
       setProgressColor('red');
     }
+
+    setModalOpened(false);
   };
   /*const onChange = async (event) => {
     setShowSpinner(true);
@@ -241,18 +334,52 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
     playVideoRef.current.pause();
   };
 
+  const modalForm = useForm({ initialValues: { vidTitle: '' } });
+  const [modalSubmitButtonDisabled, setModalSubmitButtonDisabled] = useState(false);
+
+  function saveVideoWrapper() {
+    setModalSubmitButtonDisabled(true);
+    var vidTitle = modalForm.values.vidTitle;
+    saveVideo({ vidTitle });
+  }
+
   return (
     <>
-      {JSON.stringify(trimmedVideo)}
-      wtf +{JSON.stringify(trimmedVideo)}+
+      {JSON.stringify(params)}
+      <Modal
+        opened={modalOpened}
+        onClose={() => setModalOpened(false)}
+        title="Set Video Properties"
+        centered
+      >
+        <TextInput
+          label="Video Title"
+          placeholder="My Best 3-Second Video Yet"
+          {...modalForm.getInputProps('vidTitle')}
+        ></TextInput>
+        <Center style={{ paddingTop: '20px' }}>
+          <Button
+            disabled={modalSubmitButtonDisabled}
+            onClick={saveVideoWrapper}
+            variant="light"
+            color="cyan"
+          >
+            Submit & Upload
+          </Button>
+        </Center>
+      </Modal>
       <Container>
-        FFMPEG LOADED? : {ready ? 'yes' : 'no'}
-        <br />
-        {progress}
-        <br />
-        {progressY}
-        <br />
-        {playVideoRef?.current?.currentTime}
+        <div id="debugTrimmerInformation" style={{ display: 'none' }}>
+          {JSON.stringify(trimmedVideo)}
+          wtf +{JSON.stringify(trimmedVideo)}+<br />
+          FFMPEG LOADED? : {ready ? 'yes' : 'no'}
+          <br />
+          {progress}
+          <br />
+          {progressY}
+          <br />
+          {playVideoRef?.current?.currentTime}
+        </div>
         <Center style={{ paddingTop: '5rem' }}>
           <video
             style={{
@@ -318,8 +445,11 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ ...props })
             variant="subtle"
             className="upload-and-complete-control"
             title="Upload And Finish Result"
-            onClick={saveVideo}
+            onClick={() => {
+              setModalOpened(true);
+            }}
           >
+            {/* onClick={saveVideo} */}
             Upload to Eniv {'   '}
             <IconCloudUpload style={{ paddingLeft: '8px' }} size={30} />
           </Button>
