@@ -21,6 +21,9 @@
   "dependencies": {
     "@emotion/react": "^11.10.4",
     "@emotion/server": "^11.10.0",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@ffmpeg/core": "^0.11.0",
+    "@ffmpeg/ffmpeg": "^0.11.6",
     "@mantine/carousel": "5.6.2",
     "@mantine/core": "5.6.2",
     "@mantine/dates": "5.6.2",
@@ -40,6 +43,7 @@
     "next": "12.3.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "shaneffmpeg": "https://github.com/glowstik/gs-ffmpeg",
     "styled-components": "^5.3.6"
   },
   "devDependencies": {
