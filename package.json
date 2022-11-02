@@ -19,6 +19,7 @@
     "storybook:build": "build-storybook"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.201.0",
     "@emotion/react": "^11.10.4",
     "@emotion/server": "^11.10.0",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
