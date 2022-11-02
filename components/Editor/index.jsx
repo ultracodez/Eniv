@@ -1,6 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'; // https://github.com/ffmpegwasm/ffmpeg.wasm/blob/master/docs/api.md
-import { ActionIcon, Button, Center, Container, Group, RangeSlider, Slider } from '@mantine/core';
+import {
+  ActionIcon,
+  Button,
+  Center,
+  Container,
+  Group,
+  Progress,
+  RangeSlider,
+  Slider,
+} from '@mantine/core';
 import {
   IconCloudUpload,
   IconDownload,
@@ -30,10 +39,12 @@ export default function Editor({ videoUrl, timings, setTimings, ...props }) {
   const playVideoRef = useRef();
 
   //State handling storing of the trimmed video
-  const [trimmedVideo, setTrimmedVideo] = useState();
+  const [trimmedVideo, setTrimmedVideo] = useState('FAILURE');
+  const [trimmingDone, setTrimmingDone] = useState(false);
 
   //Integer state to handle the progress bars numerical incremation
   const [progress, setProgress] = useState(0);
+  const [renderProgress, setRenderProgress] = useState(0);
   const [progressY, setProgressY] = useState(0);
 
   function setAndUpdateProgress(progPercent) {
@@ -66,52 +77,132 @@ export default function Editor({ videoUrl, timings, setTimings, ...props }) {
     if (len > 7) {
       //setProgressY(oldEnd + ' : ' + end);
       if (end > oldEnd && start < oldStart) {
-        setProgressY('whaaaa');
+        //setProgressY('whaaaa');
       } else if (end > oldEnd) {
-        setProgressY('end bigger than oldEnd');
+        //setProgressY('end bigger than oldEnd');
         rRangeValue = [start * 10 + 15, end * 10];
       } else if (start < oldStart) {
-        setProgressY('start bigger than oldStart');
+        //setProgressY('start bigger than oldStart');
 
         rRangeValue = [start * 10, end * 10 - 15];
       }
 
       // Incase the user clicked
       var length = Math.round((rRangeValue[1] - rRangeValue[0]) / 10);
-      setProgressY(length + JSON.stringify(rRangeValue));
+      //setProgressY(length + JSON.stringify(rRangeValue));
       //aka incase the length is STILL greater than 7
       if (length > 7) {
         if (end > oldEnd) {
           rRangeValue = [end * 10 - 70, end * 10];
-          setProgressY('ENDNDNENEND');
+          //setProgressY('ENDNDNENEND');
         } else if (start < oldStart) {
-          setProgressY('ayuq3truehu');
+          //setProgressY('ayuq3truehu');
           rRangeValue = [start * 10, start * 10 + 70];
         } else {
-          setProgressY(start + ' aaa ' + end);
+          //setProgressY(start + ' aaa ' + end);
         }
       }
     } else {
       rRangeValue = progPercentt;
-      setProgressY(`Start: ${start}. End: ${end}. Duration: ${len}.`);
+      //setProgressY(`Start: ${start}. End: ${end}. Duration: ${len}.`);
     }
 
     setRangeValue(rRangeValue);
-    setProgressY((rRangeValue[1] - rRangeValue[0]) / 10 < 8 ? 'true' : 'false');
+    //setProgressY((rRangeValue[1] - rRangeValue[0]) / 10 < 8 ? 'true' : 'false');
   }
 
   const saveVideo = async (fileInput) => {
-    const trimStart = Math.round(progPercentt[0] / 10);
-    const trimEnd = Math.round(progPercentt[1] / 10);
+    setProgressY('iwantthistowork');
+
+    const trimStart = rangeValue[0] / 10;
+    const trimEnd = rangeValue[1] / 10;
+
+    const trimmedVideo = trimEnd - trimStart;
+    setRenderProgress(0);
+    try {
+      //Disabling new-cap for FS function
+      // eslint-disable-next-line new-cap
+      setRenderProgress(20);
+      setProgressY('iwantthistowork - written');
+      ffmpeg.current.FS('writeFile', 'myFile.mp4', await fetchFile(videoUrl));
+
+      setRenderProgress(50);
+      setProgressY('iwantthistowork - settingprogress');
+      await ffmpeg.current.run(
+        '-ss',
+        `${trimStart}`,
+        '-accurate_seek',
+        '-i',
+        'myFile.mp4',
+        '-to',
+        `${trimmedVideo}`,
+        '-codec',
+        'copy',
+        'output.mp4'
+      );
+      setRenderProgress(80);
+      // eslint-disable-next-line new-cap
+      const data = ffmpeg.current.FS('readFile', 'output.mp4');
+      setRenderProgress(90);
+      const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
+
+      setTrimmedVideo(url);
+      setTrimmingDone(true);
+      setProgressY('PLS');
+      setProgressY('itworked???');
+      setRenderProgress(100);
+    } catch (error) {
+      //setRenderProgress(0);
+      setProgressY(
+        'ERROR:' +
+          JSON.stringify(error.cause) +
+          '    a a a a     ' +
+          JSON.stringify(error.stack) +
+          '  a a a a a ' +
+          JSON.stringify(error) +
+          `step: ${renderProgress}`
+      );
+      console.log(error);
+    }
   };
+  /*const onChange = async (event) => {
+    setShowSpinner(true);
+    event.preventDefault();
+    const formData = new FormData();
+    const file = event.target.files[0];
+    formData.append("inputFile", file);
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData
+      });
+      const data = await response.json();
+      setPublicId(data.public_id);
+    } catch (error) {
+      setShowSpinner(false);
+    } finally {
+      setShowSpinner(false);
+      setShowVideo(true);
+    }
+  };*/
 
   //Function handling loading in ffmpeg
   const load = async () => {
+    setProgress('abc');
     try {
       await ffmpeg.current.load();
 
       setReady(true);
+      setProgressY('SUCCESS');
     } catch (error) {
+      setProgressY(
+        JSON.stringify(error) +
+          'a a aa a a ' +
+          JSON.stringify(error.stack) +
+          'a a a a ' +
+          JSON.stringify(error.cause)
+      );
       console.log(error);
     }
   };
@@ -123,6 +214,7 @@ export default function Editor({ videoUrl, timings, setTimings, ...props }) {
       corePath: 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
     });
     load();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -156,6 +248,8 @@ export default function Editor({ videoUrl, timings, setTimings, ...props }) {
 
   return (
     <>
+      {JSON.stringify(trimmedVideo)}
+      wtf +{JSON.stringify(trimmedVideo)}+
       <Container>
         {progress}
         <br />
@@ -189,6 +283,7 @@ export default function Editor({ videoUrl, timings, setTimings, ...props }) {
           </video>
         </Center>
         <Slider step={0.5} value={progress} onChange={setAndUpdateProgress} />
+        <Progress value={renderProgress} color="violet" />
         <RangeSlider
           step={0.1}
           min={0}
@@ -227,7 +322,7 @@ export default function Editor({ videoUrl, timings, setTimings, ...props }) {
             variant="subtle"
             className="upload-and-complete-control"
             title="Upload And Finish Result"
-            onClick={skipToEnd}
+            onClick={saveVideo}
           >
             Upload to Eniv {'   '}
             <IconCloudUpload style={{ paddingLeft: '8px' }} size={30} />
