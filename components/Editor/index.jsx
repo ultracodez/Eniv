@@ -43,7 +43,7 @@ function getJsonFromUrl(url) {
 }
 
 export { Editor };
-export default function Editor({ videoUrl, /* timings, setTimings,*/ redirectUrl, ...props }) {
+export default function Editor({ videoUrl, /* timings, setTimings,*//* redirectUrl,*/ ...props }) {
   const params = getJsonFromUrl(window?.location?.search);
 
   const [modalOpened, setModalOpened] = useState(false);
