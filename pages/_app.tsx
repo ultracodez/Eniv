@@ -9,8 +9,11 @@ import { useForm } from '@mantine/form';
 import Header from '../components/Layout/header';
 import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
+import { AuthSession } from '@supabase/supabase-js';
 
-export default function App(props: AppProps & { colorScheme: ColorScheme }) {
+export default function App(
+  props: AppProps & { colorScheme: ColorScheme; initialSession: AuthSession }
+) {
   const { Component, pageProps } = props;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
@@ -29,10 +32,7 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
         <link rel="shortcut icon" href="/favicon.svg" />
       </Head>
 
-      <SessionContextProvider
-        supabaseClient={supabaseClient}
-        initialSession={pageProps.initialSession}
-      >
+      <SessionContextProvider supabaseClient={supabaseClient} initialSession={props.initialSession}>
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
           <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
             <NotificationsProvider>
