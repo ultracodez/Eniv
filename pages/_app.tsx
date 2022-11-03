@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ReactComponentElement, useState } from 'react';
 import NextApp, { AppProps, AppContext } from 'next/app';
 import { getCookie, setCookie } from 'cookies-next';
 import Head from 'next/head';
@@ -10,6 +10,7 @@ import Header from '../components/Layout/header';
 import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import { AuthSession } from '@supabase/supabase-js';
+import { useRouter } from 'next/router';
 
 export default function App(
   props: AppProps & { colorScheme: ColorScheme; initialSession: AuthSession }
@@ -17,6 +18,8 @@ export default function App(
   const { Component, pageProps } = props;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
+  const router = useRouter();
+
 
   const toggleColorScheme = (value?: ColorScheme) => {
     const nextColorScheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
@@ -37,14 +40,22 @@ export default function App(
           <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
             <NotificationsProvider>
               <Header />
+              {getDisplayName(Component) === 'Page404' ? 
+              null : 
               <div style={{ height: '7%' }}>aaa</div>
-              <Component {...pageProps} />
+         }
+            <Component {...pageProps} />
             </NotificationsProvider>
           </MantineProvider>
         </ColorSchemeProvider>
       </SessionContextProvider>
     </>
   );
+}
+
+
+function getDisplayName(WrappedComponent:any) {
+  return WrappedComponent.displayName || WrappedComponent.name || 'Component';
 }
 
 App.getInitialProps = async (appContext: AppContext) => {
