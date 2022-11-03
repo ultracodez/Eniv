@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import Avatar from '../User/Avatar';
+import { Button, Center, Group, TextInput } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
+import { IconCheckCircle, IconX } from '@supabase/ui';
+import { IconCheck } from '@tabler/icons';
 
 export default function Account({ session }) {
   const supabase = useSupabaseClient();
@@ -35,6 +39,13 @@ export default function Account({ session }) {
       }
     } catch (error) {
       alert('Error loading user data!');
+
+      showNotification({
+        title: 'Failed to get user data',
+        icon: <IconX />,
+        color: 'red',
+        message: JSON.stringify(error),
+      });
       console.log(error);
     } finally {
       setLoading(false);
@@ -55,9 +66,19 @@ export default function Account({ session }) {
 
       let { error } = await supabase.from('profiles').upsert(updates);
       if (error) throw error;
-      alert('Profile updated!');
+      showNotification({
+        title: 'Updated profile',
+        icon: <IconCheck />,
+        color: 'green',
+        message: ':)',
+      });
     } catch (error) {
-      alert('Error updating the data!');
+      showNotification({
+        title: 'Failed to updated profile',
+        icon: <IconX />,
+        color: 'red',
+        message: ':,(',
+      });
       console.log(error);
     } finally {
       setLoading(false);
@@ -76,21 +97,20 @@ export default function Account({ session }) {
         }}
       />
       <div>
-        <label htmlFor="email">Email</label>
-        <input id="email" type="text" value={session.user.email} disabled />
+        EML
+        <TextInput value={session.user.email} disabled></TextInput>
       </div>
       <div>
         <label htmlFor="username">Username</label>
-        <input
+        <TextInput
           id="username"
-          type="text"
           value={username || ''}
           onChange={(e) => setUsername(e.target.value)}
         />
       </div>
       <div>
         <label htmlFor="website">Website</label>
-        <input
+        <TextInput
           id="website"
           type="website"
           value={website || ''}
@@ -98,21 +118,28 @@ export default function Account({ session }) {
         />
       </div>
 
-      <div>
-        <button
-          className="button primary block"
-          onClick={() => updateProfile({ username, website, avatar_url })}
-          disabled={loading}
-        >
-          {loading ? 'Loading ...' : 'Update'}
-        </button>
-      </div>
-
-      <div>
-        <button className="button block" onClick={() => supabase.auth.signOut()}>
-          Sign Out
-        </button>
-      </div>
+      <br />
+      <Center>
+        <Group>
+          <Button
+            color="indigo"
+            variant={loading ? 'outline' : 'filled'}
+            className="button primary block"
+            onClick={() => updateProfile({ username, website, avatar_url })}
+            disabled={loading}
+          >
+            {loading ? 'Loading ...' : 'Update'}
+          </Button>
+          <Button
+            variant="outline"
+            color="indigo"
+            className="button block"
+            onClick={() => supabase.auth.signOut()}
+          >
+            Sign Out
+          </Button>
+        </Group>
+      </Center>
     </div>
   );
 }
