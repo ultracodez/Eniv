@@ -3,7 +3,7 @@ import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useState } from "react";
 import {AuthUser, SupabaseClient} from "@supabase/supabase-js"
 
-export async function getProfile(id:any, supabase: SupabaseClient, cCalback:any) {
+export async function getProfile(id:any, supabase: SupabaseClient) {
     try {
       if(!id) {
         return "idnone"
@@ -16,7 +16,7 @@ export async function getProfile(id:any, supabase: SupabaseClient, cCalback:any)
       }
 
       if (data) {
-        cCalback(data);
+        return data;
       }
     } catch (error) {
     } finally {

@@ -31,7 +31,7 @@ export default function Account({ session }) {
 
       if (data) {
         setUsername(data.username);
-        setFullname(data.avatar_url);
+        setFullname(data.full_name);
         setAvatarUrl(data.avatar_url);
       }
     } catch (error) {

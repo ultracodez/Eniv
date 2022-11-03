@@ -15,22 +15,14 @@ export default function Header({session}:{session:AuthSession}) {
 
   const user = useUser();
 
-  const [avatarUrl,setAvatarUrl] = useState();
-  const [userProfile, setUserProfile] = useState();
-
-  useEffect(()=>{
-
-  },[userProfile])
-
-  async function setAvatar(userProfile:any) {
-    setAvatarUrl("a"+await avatarFetcher(url.avatar_url,supabase))
-  }
+  const [avatarUrl,setAvatarUrl] = useState<undefined|string>();
+  const [userProfile, setUserProfile] = useState<any>();
 
   useEffect(() => {
     const fetcher = async () => {
       
-    await getProfile(user?.id,supabase,setUserProfile);
-    
+    setUserProfile(await getProfile(user?.id,supabase));
+    setAvatarUrl(await avatarFetcher(userProfile?.avatar_url,supabase))
   };
     fetcher()
   }, [session]);
@@ -38,7 +30,7 @@ export default function Header({session}:{session:AuthSession}) {
   return (
     <Paper radius={'xs'} style={{ position: 'fixed', top: 0, right: 0, left: 0, height: '7%' }}>
       {JSON.stringify(userProfile)}
-      <div style={{ height: '7%', right: 10, position: 'fixed' }} >{avatarUrl}?</div>
+      <div style={{ height: '7%', right: 10, position: 'fixed' }} > {avatarUrl ? <img  src={avatarUrl ?? ""}/> : undefined}</div>
       <Link href="/" passHref>
         <a >
       <div style={{ height: '7%', position: 'fixed', width: '10rem', marginLeft: '1rem' }}>
