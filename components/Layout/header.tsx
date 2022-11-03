@@ -9,7 +9,7 @@ import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { getProfile } from '../Auth/getProfile';
 import avatarFetcher from '../User/avatarFetcher';
 
-export default function Header({session}:{session:AuthSession | undefined}) {
+export default function Header({session}:{session?:AuthSession}) {
 
   const supabase = useSupabaseClient();
 
