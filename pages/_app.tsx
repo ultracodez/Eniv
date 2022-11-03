@@ -7,10 +7,13 @@ import { NotificationsProvider } from '@mantine/notifications';
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeToggle';
 import { useForm } from '@mantine/form';
 import Header from '../components/Layout/header';
+import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { SessionContextProvider } from '@supabase/auth-helpers-react';
 
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
   const { Component, pageProps } = props;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
+  const [supabaseClient] = useState(() => createBrowserSupabaseClient());
 
   const toggleColorScheme = (value?: ColorScheme) => {
     const nextColorScheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
@@ -26,14 +29,20 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
         <link rel="shortcut icon" href="/favicon.svg" />
       </Head>
 
-      <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-        <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
-          <NotificationsProvider>
-            <Header />
-            <Component {...pageProps} />
-          </NotificationsProvider>
-        </MantineProvider>
-      </ColorSchemeProvider>
+      <SessionContextProvider
+        supabaseClient={supabaseClient}
+        initialSession={pageProps.initialSession}
+      >
+        <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+          <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
+            <NotificationsProvider>
+              <Header />
+              <div style={{ height: '7%' }}>aaa</div>
+              <Component {...pageProps} />
+            </NotificationsProvider>
+          </MantineProvider>
+        </ColorSchemeProvider>
+      </SessionContextProvider>
     </>
   );
 }
