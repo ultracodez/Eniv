@@ -8,10 +8,8 @@ import { useState } from 'react';
 
 export default function UserActionMenu({children, loggedIn, supabase,...props}:{children:ReactJSXElement[] | ReactJSXElement, loggedIn:boolean, supabase:SupabaseClient}) {
     const {colorScheme, toggleColorScheme}  =  useMantineColorScheme()
-  const [da,setDa] = useState();
 
   function logInOrOut() {
-    setDa(JSON.stringify(loggedIn));
     if(loggedIn) { 
       supabase.auth.signOut();
        document.cookie="";
@@ -41,7 +39,7 @@ export default function UserActionMenu({children, loggedIn, supabase,...props}:{
         <Menu.Item icon={<IconSettings size={14} />} component="a">Settings</Menu.Item>
         </Link>
 
-        <Menu.Item color={loggedIn?"red" : null} onClick={logInOrOut} icon={loggedIn ? <IconDoorExit size={14} /> : <IconDoorEnter size={14}/>} component="a">Log {loggedIn ? "Out" : "In"}</Menu.Item>
+        <Menu.Item color={loggedIn?"red" : ""} onClick={logInOrOut} icon={loggedIn ? <IconDoorExit size={14} /> : <IconDoorEnter size={14}/>} component="a">Log {loggedIn ? "Out" : "In"}</Menu.Item>
  
       </Menu.Dropdown>
     </Menu>
