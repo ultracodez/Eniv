@@ -158,6 +158,11 @@ export default function Editor({ videoUrl, /* timings, setTimings,*//* redirectU
   }
 
   const saveVideo = async ({ vidTitle }) => {
+    if(!ready) {
+      alert('ffmpeg not ready yet, please wait a bit')
+      return;
+    }
+
     setProgressColor('violet');
     setRenderProgress(0);
     const trimStart = rangeValue[0] / 10;
@@ -249,7 +254,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*//* redirectU
         await new Promise((resolve) => setTimeout(resolve, 300));
         showNotification({
           title: 'Upload Failed',
-          message: ':,(',
+          message: 'Error data: ' + JSON.stringify(error),
           icon: <IconAlertCircle />,
           color: 'red',
         });
