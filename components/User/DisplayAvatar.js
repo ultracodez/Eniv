@@ -5,7 +5,7 @@ import { useHover } from '@mantine/hooks';
 import { IconCamera } from '@supabase/ui';
 import { IconFileUpload } from '@tabler/icons';
 
-export default function Avatar({ uid, url, size, onUpload }) {
+export default function Avatar({ uid, url, size }) {
   const supabase = useSupabaseClient();
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -60,46 +60,12 @@ export default function Avatar({ uid, url, size, onUpload }) {
   };
 
   return (
-    <div>
-      <input type="file"
-          id="single"
-          accept="image/*"          
-          style={{
-            width:"100%",
-            position: 'absolute',
-            visibility:"hidden"
-          }}
-          onChange={uploadAvatar}
-          disabled={uploading}></input>
-          <label htmlFor="single">
-            
-      <Center>
 
-<div ref={ref} >
-      <div 
-          style={{ height: size, width: size, borderRadius:"10rem",position:"static" }} > 
-                <div ref={iconRef} style={{zIndex:10000, position:"absolute", pointerEvents:"none" ,display: hovered || iconHovered ? "block" : "none"}}>
-                <Center style={{marginTop:size/2-25, width:size}}>
-<IconFileUpload color="white" size={50}/>
-      </Center>
-      </div>
-      <div style={{position:"absolute"}}>
-      {avatarUrl ? (
         <img
           src={avatarUrl}
           alt="Avatar"
           className="avatar image"
           style={{ height: size, width: size, borderRadius:"10rem", filter: (hovered || iconHovered) ? "blur(3px)" : "initial" }}
         />
-      ) : (
-        <div className="avatar no-image"  style={{ height: size, width: size }} />
-      )}
-      </div>
-      </div>
-      </div>
-      </Center>
-      </label>
-
-    </div>
   );
 }
