@@ -9,10 +9,10 @@ export default async function avatarFetcher(path:any,supabase:SupabaseClient) {
             throw error;
           }
           const url = URL.createObjectURL(data);
-          return url || "failed";
+          return url;
         } catch (error) {
           console.log('Error downloading image: ', error);
-          return "failed with "+JSON.stringify(error) + " " + JSON.stringify(path);
+          return null;
         }
       }
     
