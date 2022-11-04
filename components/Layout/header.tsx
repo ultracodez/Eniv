@@ -1,4 +1,4 @@
-import { Button, Divider, Paper } from '@mantine/core';
+import { Button, Center, Divider, Paper } from '@mantine/core';
 import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
 import Image from 'next/image';
 import eniv from '../../public/eniv.svg';
@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { getProfile } from '../Auth/getProfile';
 import avatarFetcher from '../User/avatarFetcher';
+import UserActionMenu from "../User/Menu"
 
 export default function Header({session}:{session?:AuthSession}) {
 
@@ -15,8 +16,14 @@ export default function Header({session}:{session?:AuthSession}) {
 
   const user = useUser();
 
+  const [debugMessages,setDebugMessages] = useState<string>("");
   const [avatarUrl,setAvatarUrl] = useState<undefined|string>();
   const [userProfile, setUserProfile] = useState<any>();
+
+  useEffect(()=>{
+    
+    setDebugMessages(avatarUrl)
+  })
 
   useEffect(() => {
     const fetcher = async () => {
@@ -28,12 +35,24 @@ export default function Header({session}:{session?:AuthSession}) {
   }, [session]);
 
   return (
-    <Paper radius={'xs'} style={{ position: 'fixed', top: 0, right: 0, left: 0, height: '7%' }}>
-      {JSON.stringify(userProfile)}
-      <div style={{ height: '7%', right: 10, position: 'fixed' }} > {avatarUrl ? <img src={avatarUrl ?? ""}/> : <Link href="/auth" passHref><Button component="a">Sign In</Button> </Link>}</div>
+    <Paper radius={'xs'} style={{ position: 'fixed', top: 0, right: 0, left: 0, height: '5rem' }}>
+      <Center style={{ height: '5rem', right: 10, position: 'fixed' }} > 
+      {debugMessages}
+      {avatarUrl ? 
+      <UserActionMenu>
+      <img style={{objectFit:"cover", borderRadius:"10rem", width:"3.5rem",height:"3.5rem",marginRight:"1rem" }}  src={avatarUrl ?? ""}/>
+      </UserActionMenu>
+       : 
+       <Link href="/auth" passHref>
+        <Button component="a">
+          Sign In
+          </Button>
+           </Link>
+      }
+      </Center>
       <Link href="/" passHref>
         <a >
-      <div style={{ height: '7%', position: 'fixed', width: '10rem', marginLeft: '1rem' }}>
+      <div style={{ height: '5rem', position: 'fixed', width: '10rem', marginLeft: '1rem' }}>
         <Image src={eniv} layout="fill" />
       </div>
       </a>
