@@ -19,7 +19,7 @@ export default function UserActionMenu({children,...props}:{children:ReactJSXEle
         <Menu.Divider />
 
                    <Menu.Label>Other</Menu.Label>
-        <Menu.Item onClick={(e)=>{toggleColorScheme();}} color={colorScheme==="dark" ? "yellow" : "blue"} icon={colorScheme==="dark" ? <IconSun size={14}/> : <IconMoonStars size={14} />}>Switch to {colorScheme === "dark" ? "light" : "dark"}</Menu.Item>
+        <Menu.Item onClick={(e:any)=>{toggleColorScheme();}} color={colorScheme==="dark" ? "yellow" : "blue"} icon={colorScheme==="dark" ? <IconSun size={14}/> : <IconMoonStars size={14} />}>Switch to {colorScheme === "dark" ? "light" : "dark"}</Menu.Item>
         <Link href="/auth" passHref>
         <Menu.Item icon={<IconSettings size={14} />} component="a">Settings</Menu.Item>
         </Link>
