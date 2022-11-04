@@ -23,11 +23,6 @@ export default function Header({oldSession, ...props}:{oldSession?:AuthSession, 
 
   const [loading, setLoading] = useState(true);
 
-  useEffect(()=>{
-    
-    setDebugMessages()
-  })
-
   useEffect(() => {
     const fetcher = async () => {
       
