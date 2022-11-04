@@ -239,22 +239,45 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
         const data = await response.json();*/
         //setPublicId(data.public_id);
 
-        uploadFile(blobby, cloudinaryCloudName);
-
-        hideNotification('uploadNot');
-
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        showNotification({
-          title: 'Upload Successful',
-          message: ':)',
-          icon: <IconCheck />,
-          color: 'green',
+        uploadFile(blobby, cloudinaryCloudName, onSuccess, onError, {
+          title: modalForm.values.vidTitle,
+          description:""
         });
-        setTimeout(() => {
-          if (params.rdUrl) {
-            window.location.href = params.rdUrl;
-          }
-        }, 2000);
+
+        async function onSuccess() {
+          hideNotification('uploadNot');
+
+          await new Promise((resolve) => setTimeout(resolve, 300));
+          showNotification({
+            title: 'Upload Successful',
+            message: ':)',
+            icon: <IconCheck />,
+            color: 'green',
+          });
+          setTimeout(() => {
+            if (params.rdUrl) {
+              window.location.href = params.rdUrl;
+            }
+          }, 2000);
+        }
+        async function onError() {
+          hideNotification('uploadNot');
+
+          await new Promise((resolve) => setTimeout(resolve, 300));
+          showNotification({
+            title: 'Upload Failed',
+            message:
+              'Error data: ' +
+              JSON.stringify(error) +
+              ' ' +
+              JSON.stringify(error.stack) +
+              ' ' +
+              JSON.stringify(error.cause),
+            icon: <IconAlertCircle />,
+            color: 'red',
+          });
+          setModalSubmitButtonDisabled(false);
+        }
       } catch (error) {
         hideNotification('uploadNot');
 

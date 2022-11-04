@@ -6,39 +6,21 @@ export default function VideoPlayOnVisible({ id }: { id: any }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isOnScreen = useElementOnScreen(defaultIoOptions, containerRef);
 
-  const afterDelayScrollCallback = () => {
-    if (isOnScreen) {
-      //containerRef.current?.scrollIntoView({behavior:"smooth",block: "end", inline: "nearest"});
-      /*if (containerRef !== undefined) {
-        const eleY = containerRef && containerRef?.current?.getBoundingClientRect()?.top;
-        if (eleY) {
-          const y = eleY + window.scrollY - convertRemToPixels(10);
-          window.scroll({
-            top: y,
-            behavior: 'smooth',
-          });
-        }
-      }*/
-    }
-  };
-  useEffect(() => {
-    setTimeout(afterDelayScrollCallback, 1000);
-  }, [isOnScreen]);
-
   return (
-    <Center style={{ paddingTop: '5rem' }}>
-      <div
-        style={{
-          height: '75vh',
-          width: '50%',
-          background: isOnScreen ? 'red' : 'green',
-          border: 'medium dashed green',
-        }}
-        ref={containerRef}
-      >
-        {id}
-      </div>
-    </Center>
+    <div
+      style={{
+        scrollSnapAlign: 'center',
+        height: '80vh',
+        width: '100%',
+        background: isOnScreen ? 'red' : 'green',
+        border: 'medium dashed green',
+        marginTop: '2.5rem',
+        marginBottom: '2.5rem',
+      }}
+      ref={containerRef}
+    >
+      {id}
+    </div>
   );
 }
 
