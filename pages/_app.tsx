@@ -42,7 +42,7 @@ export default function App(
               <Header extraProps={pageProps} />
               {getDisplayName(Component) === 'Page404' ? 
               null : 
-              <div style={{ height: '7%' }}>aaa</div>
+              <div style={{ height: '5rem' }}>aaa</div>
          }
             <Component {...pageProps} />
             </NotificationsProvider>

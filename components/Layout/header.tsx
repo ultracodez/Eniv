@@ -66,7 +66,7 @@ export default function Header({oldSession, ...props}:{oldSession?:AuthSession, 
       </a>
       </Link>
       {/* Padding */}
-      <div style={{height:"90%"}}></div>
+      <div style={{height:"84%"}}></div>
       <Divider my="sm" variant="dashed"/>
     </Paper>
   );
