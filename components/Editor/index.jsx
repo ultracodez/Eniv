@@ -24,6 +24,7 @@ import {
 } from '@tabler/icons';
 import eniv from '../../public/eniv.png';
 import Image from 'next/image';
+import { cloudinary } from '../Cloudinary/CloudinaryComponent';
 
 const MaxLength = 4;
 
@@ -43,7 +44,7 @@ function getJsonFromUrl(url) {
 }
 
 export { Editor };
-export default function Editor({ videoUrl, /* timings, setTimings,*//* redirectUrl,*/ ...props }) {
+export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirectUrl,*/ ...props }) {
   const params = getJsonFromUrl(window?.location?.search);
 
   const [modalOpened, setModalOpened] = useState(false);
@@ -158,8 +159,10 @@ export default function Editor({ videoUrl, /* timings, setTimings,*//* redirectU
   }
 
   const saveVideo = async ({ vidTitle }) => {
-    if(!ready) {
-      alert('ffmpeg not ready yet, please wait a bit')
+    if (!ready) {
+      alert('ffmpeg not ready yet, please wait a bit');
+
+      setModalSubmitButtonDisabled(false);
       return;
     }
 
@@ -254,7 +257,13 @@ export default function Editor({ videoUrl, /* timings, setTimings,*//* redirectU
         await new Promise((resolve) => setTimeout(resolve, 300));
         showNotification({
           title: 'Upload Failed',
-          message: 'Error data: ' + JSON.stringify(error) + " " + JSON.stringify(error.stack) + " " + JSON.stringify(error.cause),
+          message:
+            'Error data: ' +
+            JSON.stringify(error) +
+            ' ' +
+            JSON.stringify(error.stack) +
+            ' ' +
+            JSON.stringify(error.cause),
           icon: <IconAlertCircle />,
           color: 'red',
         });
@@ -283,8 +292,11 @@ export default function Editor({ videoUrl, /* timings, setTimings,*//* redirectU
       }/* */
     } catch (error) {
       console.log(error);
+
       setProgressY(JSON.stringify(error.stack));
       setProgressColor('red');
+
+      setModalSubmitButtonDisabled(false);
     }
 
     setModalOpened(false);

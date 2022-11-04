@@ -1,7 +1,7 @@
 import { Button, Container, Group, Slider, Text } from '@mantine/core';
 import { useState } from 'react';
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeToggle';
-import { Dropzone } from '@mantine/dropzone';
+import { Dropzone, FileWithPath } from '@mantine/dropzone';
 import { IconUpload, IconVideo, IconX } from '@tabler/icons';
 import { Editor } from '../components/Editor';
 import React from 'react';
@@ -12,7 +12,7 @@ export default function HomePage() {
 
   //State handling storing of the video
   const [videoUrl, setVideoUrl] = useState('');
-  const [videoBlob, setVideoBlob] = useState('');
+  const [videoBlob, setVideoBlob] = useState<FileWithPath>();
 
   const renderUploader = () => {
     return (
@@ -66,7 +66,7 @@ export default function HomePage() {
   };
 
   //Function handling the file upload file logic
-  const uploadFile = async (fileInput: any) => {
+  const uploadFile = async (fileInput: FileWithPath[]) => {
     console.log(fileInput[0]);
     let fileUrl = URL.createObjectURL(fileInput[0]);
     setIsUpload(false);
