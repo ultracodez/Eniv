@@ -254,7 +254,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*//* redirectU
         await new Promise((resolve) => setTimeout(resolve, 300));
         showNotification({
           title: 'Upload Failed',
-          message: 'Error data: ' + JSON.stringify(error),
+          message: 'Error data: ' + JSON.stringify(error) + " " + JSON.stringify(error.stack) + " " + JSON.stringify(error.cause),
           icon: <IconAlertCircle />,
           color: 'red',
         });
