@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import { Center } from '@mantine/core';
 
 export default function Avatar({ uid, url, size, onUpload }) {
   const supabase = useSupabaseClient();
@@ -55,16 +56,18 @@ export default function Avatar({ uid, url, size, onUpload }) {
 
   return (
     <div>
+      <Center>
       {avatarUrl ? (
         <img
           src={avatarUrl}
           alt="Avatar"
           className="avatar image"
-          style={{ height: size, width: size }}
+          style={{ height: size, width: size, borderRadius:"10rem" }}
         />
       ) : (
         <div className="avatar no-image" style={{ height: size, width: size }} />
       )}
+      </Center>
       <div style={{ width: size }}>
         <label className="button primary block" htmlFor="single">
           {uploading ? 'Uploading ...' : 'Upload'}

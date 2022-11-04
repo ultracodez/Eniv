@@ -39,7 +39,7 @@ export default function App(
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
           <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
             <NotificationsProvider>
-              <Header />
+              <Header extraProps={pageProps} />
               {getDisplayName(Component) === 'Page404' ? 
               null : 
               <div style={{ height: '7%' }}>aaa</div>

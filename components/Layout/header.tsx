@@ -5,13 +5,13 @@ import eniv from '../../public/eniv.svg';
 import Link from 'next/link';
 import { AuthSession } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
-import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
+import { useSession, useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { getProfile } from '../Auth/getProfile';
 import avatarFetcher from '../User/avatarFetcher';
 import UserActionMenu from "../User/Menu"
 
-export default function Header({session}:{session?:AuthSession}) {
-
+export default function Header({oldSession, ...props}:{oldSession?:AuthSession, extraProps:any}) {
+  const session = useSession()
   const supabase = useSupabaseClient();
 
   const user = useUser();
@@ -20,15 +20,21 @@ export default function Header({session}:{session?:AuthSession}) {
   const [avatarUrl,setAvatarUrl] = useState<undefined|string>();
   const [userProfile, setUserProfile] = useState<any>();
 
+
+  const [loading, setLoading] = useState(true);
+
   useEffect(()=>{
     
-    setDebugMessages(avatarUrl)
+    setDebugMessages()
   })
 
   useEffect(() => {
     const fetcher = async () => {
       
+      setLoading(true);
     setUserProfile(await getProfile(user?.id,supabase));
+
+    setLoading(false);
     setAvatarUrl(await avatarFetcher(userProfile?.avatar_url,supabase))
   };
     fetcher()
@@ -40,7 +46,7 @@ export default function Header({session}:{session?:AuthSession}) {
       {debugMessages}
       {avatarUrl ? 
       <UserActionMenu>
-      <img style={{objectFit:"cover", borderRadius:"10rem", width:"3.5rem",height:"3.5rem",marginRight:"1rem" }}  src={avatarUrl ?? ""}/>
+      <img style={{objectFit:"cover", borderRadius:"10rem", width:"3.5rem",height:"3.5rem",marginRight:"5rem" }}  src={avatarUrl ?? ""}/>
       </UserActionMenu>
        : 
        <Link href="/auth" passHref>
@@ -52,7 +58,7 @@ export default function Header({session}:{session?:AuthSession}) {
       </Center>
       <Link href="/" passHref>
         <a >
-      <div style={{ height: '5rem', position: 'fixed', width: '10rem', marginLeft: '1rem' }}>
+      <div style={{ height: '5rem', position: 'fixed', width: '10rem', marginLeft: '5rem' }}>
         <Image src={eniv} layout="fill" />
       </div>
       </a>
