@@ -5,6 +5,8 @@ export function uploadFile(file: Blob, cloudName: string) {
   xhr.open('POST', url, true);
   xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
+  alert('received!');
+
   // Reset the upload progress bar
   // document.getElementById('progress').style.width = 0;
 
@@ -18,6 +20,7 @@ export function uploadFile(file: Blob, cloudName: string) {
   });
 
   xhr.onreadystatechange = function (e) {
+    alert('yes');
     if (xhr.readyState == 4 && xhr.status == 200) {
       // File uploaded successfully
       var response = JSON.parse(xhr.responseText);
@@ -29,11 +32,19 @@ export function uploadFile(file: Blob, cloudName: string) {
       var img = new Image(); // HTML5 Constructor
       img.src = tokens.join('/');
       img.alt = response.public_id;
+      alert(tokens.join('/'));
       //document.getElementById('gallery').appendChild(img);
-    }
+    } else alert(JSON.stringify(e));
   };
 
-  //fd.append('upload_preset', unsignedUploadPreset);
+  xhr.onerror = function (e) {
+    alert(JSON.stringify(e));
+  };
+  xhr.onabort = function (e) {
+    alert(JSON.stringify(e));
+  };
+  // xhr.on
+  fd.append('upload_preset', 'eniv_video_main_upload_preset'); //unsignedUploadPreset);
   fd.append('tags', 'browser_upload'); // Optional - add tag for image admin in Cloudinary
   fd.append('file', file);
   xhr.send(fd);

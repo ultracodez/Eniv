@@ -24,13 +24,14 @@ import {
 } from '@tabler/icons';
 import eniv from '../../public/eniv.png';
 import Image from 'next/image';
-import { cloudinary } from '../Cloudinary/CloudinaryComponent';
+import { cloudinary, cloudinaryCloudName } from '../Cloudinary/CloudinaryComponent';
 
 const MaxLength = 4;
 
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'; // https://github.com/ffmpegwasm/ffmpeg.wasm/blob/master/docs/api.md
 import { hideNotification, showNotification } from '@mantine/notifications';
 import { useForm } from '@mantine/form';
+import { uploadFile } from '../Cloudinary/uploadFile';
 
 function getJsonFromUrl(url) {
   if (!url) url = location.search;
@@ -222,20 +223,23 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
         message: ':o',
         loading: true,
         disallowClose: true,
+        autoClose: 100000,
       });
 
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       try {
-        const formData = new FormData();
+        /*const formData = new FormData();
         formData.append('inputFile', blobby);
         formData.append('vidTitle', vidTitle);
         const response = await fetch('/api/upload', {
           method: 'POST',
           body: formData,
         });
-        const data = await response.json();
+        const data = await response.json();*/
         //setPublicId(data.public_id);
+
+        uploadFile(blobby, cloudinaryCloudName);
 
         hideNotification('uploadNot');
 
