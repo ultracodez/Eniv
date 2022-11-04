@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
-import { Center } from '@mantine/core';
+import { Center, Overlay } from '@mantine/core';
+import { useHover } from '@mantine/hooks';
+import { IconCamera } from '@supabase/ui';
+import { IconFileUpload } from '@tabler/icons';
 
 export default function Avatar({ uid, url, size, onUpload }) {
   const supabase = useSupabaseClient();
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
-
+  const { hovered, ref } = useHover();
+  const { iconHovered, iconRef } = useHover();
+  
   useEffect(() => {
     if (url) downloadImage(url);
   }, [url]);
@@ -56,34 +61,45 @@ export default function Avatar({ uid, url, size, onUpload }) {
 
   return (
     <div>
+      <input type="file"
+          id="single"
+          accept="image/*"          
+          style={{
+            width:"100%",
+            position: 'absolute',
+            visibility:"hidden"
+          }}
+          onChange={uploadAvatar}
+          disabled={uploading}></input>
+          <label htmlFor="single">
+            
       <Center>
+
+<div ref={ref} >
+      <div 
+          style={{ height: size, width: size, borderRadius:"10rem",position:"static" }} > 
+                <div ref={iconRef} style={{zIndex:10000, position:"absolute", pointerEvents:"none" ,display: hovered || iconHovered ? "block" : "none"}}>
+                <Center style={{marginTop:size/2-25, width:size}}>
+<IconFileUpload color="white" size={50}/>
+      </Center>
+      </div>
+      <div style={{position:"absolute"}}>
       {avatarUrl ? (
         <img
           src={avatarUrl}
           alt="Avatar"
           className="avatar image"
-          style={{ height: size, width: size, borderRadius:"10rem" }}
+          style={{ height: size, width: size, borderRadius:"10rem", filter: (hovered || iconHovered) ? "blur(3px)" : "initial" }}
         />
       ) : (
-        <div className="avatar no-image" style={{ height: size, width: size }} />
+        <div className="avatar no-image"  style={{ height: size, width: size }} />
       )}
-      </Center>
-      <div style={{ width: size }}>
-        <label className="button primary block" htmlFor="single">
-          {uploading ? 'Uploading ...' : 'Upload'}
-        </label>
-        <input
-          style={{
-            visibility: 'hidden',
-            position: 'absolute',
-          }}
-          type="file"
-          id="single"
-          accept="image/*"
-          onChange={uploadAvatar}
-          disabled={uploading}
-        />
       </div>
+      </div>
+      </div>
+      </Center>
+      </label>
+
     </div>
   );
 }
