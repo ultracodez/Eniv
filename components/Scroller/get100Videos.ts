@@ -5,6 +5,7 @@ export default async function get100Videos(callback: Function) {
   query get100Videos {
     videos(first:100) {
       id
+      title
       cloudinaryId
       upvotes
       views

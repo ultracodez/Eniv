@@ -42,7 +42,7 @@ export default function VideoScroller() {
           }}
         >
           {videoList.map((vid: any) => {
-            return <VideoPlayOnVisible url={vid.cloudinaryId} />;
+            return <VideoPlayOnVisible url={vid.cloudinaryId} title={vid.title} verified={false} />;
           })}
         </div>
       </div>
