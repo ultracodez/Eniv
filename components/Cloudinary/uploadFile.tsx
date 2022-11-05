@@ -55,6 +55,21 @@ export function uploadFile(
         { title: props.title, description: props.description, slug: response.secure_url }
       );
 
+      await hygraph.request(
+        `
+      mutation PublishVideo($cid:String) {
+        publishVideo(
+          where: {cloudinaryId: $cid}
+          to: PUBLISHED
+        ) {
+          cloudinaryId
+          stage
+        }
+      }
+      `,
+        { cid: response.secure_url }
+      );
+
       onSuccess();
       alert(JSON.stringify(res));
       //document.getElementById('gallery').appendChild(img);
