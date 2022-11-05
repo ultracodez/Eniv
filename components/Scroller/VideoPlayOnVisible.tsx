@@ -18,7 +18,7 @@ export default function VideoPlayOnVisible({ url }: { url: any }) {
       ref={containerRef}
     >
       <AspectRatio ratio={16 / 9}>
-        <video style={{ width: '100%' }} src={url}></video>
+        <video style={{ width: '100%' }} src={url} controls></video>
       </AspectRatio>
     </div>
   );
