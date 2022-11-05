@@ -10,6 +10,7 @@ export default async function get100Videos(callback: Function) {
       upvotes
       views
       publishedAt
+      verified
     }
   }
   `);

@@ -43,6 +43,7 @@
     "@supabase/ui": "^0.36.5",
     "@tabler/icons": "^1.107.0",
     "@types/formidable": "^2.0.5",
+    "@types/sanitize-html": "^2.6.2",
     "cloudinary": "^1.32.0",
     "cookies-next": "^2.1.1",
     "dayjs": "^1.11.6",
@@ -54,6 +55,7 @@
     "react": "18.2.0",
     "react-async": "^10.0.1",
     "react-dom": "18.2.0",
+    "sanitize-html": "^2.7.3",
     "shaneffmpeg": "https://github.com/glowstik/gs-ffmpeg",
     "styled-components": "^5.3.6"
   },
