@@ -36,7 +36,7 @@ export default function VideoScroller() {
         <div
           style={{
             scrollSnapType: 'y mandatory',
-            overflow: 'scroll',
+            overflowY: 'scroll',
             height: 'calc(100vh - 5rem)',
             width: '100%',
           }}
