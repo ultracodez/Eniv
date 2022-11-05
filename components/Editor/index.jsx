@@ -47,6 +47,11 @@ function getJsonFromUrl(url) {
 export { Editor };
 export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirectUrl,*/ ...props }) {
   const params = getJsonFromUrl(window?.location?.search);
+  //make sure the user didnt come from nextjs routing
+  useEffect(() => {
+    alert(JSON.stringify(params));
+    if (params.cameFromNextJSRouting) alert('you came from client side routing');
+  }, []);
 
   const [modalOpened, setModalOpened] = useState(false);
 
@@ -241,7 +246,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
 
         uploadFile(blobby, cloudinaryCloudName, onSuccess, onError, {
           title: modalForm.values.vidTitle,
-          description:""
+          description: '',
         });
 
         async function onSuccess() {
