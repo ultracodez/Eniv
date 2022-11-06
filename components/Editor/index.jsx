@@ -10,6 +10,7 @@ import {
   RangeSlider,
   Slider,
   Text,
+  Textarea,
   TextInput,
 } from '@mantine/core';
 import {
@@ -183,7 +184,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
     setProgressY((rRangeValue[1] - rRangeValue[0]) / 10 < MaxLength ? 'true' : 'false');
   }
 
-  const saveVideo = async ({ vidTitle }) => {
+  const saveVideo = async ({ vidTitle, vidDescription }) => {
     if (!ready) {
       alert('ffmpeg not ready yet, please wait a bit');
 
@@ -265,7 +266,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
 
         uploadFile(blobby, cloudinaryCloudName, onSuccess, onError, {
           title: modalForm.values.vidTitle,
-          description: '',
+          description: modalForm.values.vidDescription,
         });
 
         async function onSuccess() {
@@ -402,13 +403,14 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
     playVideoRef.current.pause();
   };
 
-  const modalForm = useForm({ initialValues: { vidTitle: '' } });
+  const modalForm = useForm({ initialValues: { vidTitle: '', vidDescription: '' } });
   const [modalSubmitButtonDisabled, setModalSubmitButtonDisabled] = useState(false);
 
   function saveVideoWrapper() {
     setModalSubmitButtonDisabled(true);
+    var vidDescription = modalForm.values.vidDescription;
     var vidTitle = modalForm.values.vidTitle;
-    saveVideo({ vidTitle });
+    saveVideo({ vidTitle, vidDescription });
   }
 
   return (
@@ -426,6 +428,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
           placeholder="My Best 3-Second Video Yet"
           {...modalForm.getInputProps('vidTitle')}
         ></TextInput>
+        <Textarea label="Video Description" placeholder="My video is about..." />
         <Center style={{ paddingTop: '20px' }}>
           <Button
             disabled={modalSubmitButtonDisabled}
