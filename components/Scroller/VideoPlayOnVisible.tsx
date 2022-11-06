@@ -21,18 +21,26 @@ export default function VideoPlayOnVisible({
 
   return (
     <Card
-      style={{
+      sx={(theme) => ({
         scrollSnapAlign: 'center',
-        height: '80vh',
+        [theme.fn.largerThan('lg')]: {
+          //height: '80vh',
+        },
         width: '100%',
         marginTop: '2.5rem',
         marginBottom: '2.5rem',
-      }}
+        borderRadius: '0.5rem',
+      })}
       ref={containerRef}
     >
       <Card.Section>
         <AspectRatio ratio={16 / 9}>
-          <video style={{ width: '100%' }} src={url} controls></video>
+          <video
+            poster="https://images.pexels.com/photos/356079/pexels-photo-356079.jpeg?cs=srgb&dl=pexels-pixabay-356079.jpg&fm=jpg"
+            style={{ width: '100%' }}
+            src={url}
+            controls
+          ></video>
         </AspectRatio>
       </Card.Section>
       <Group position="apart" mt="md" mb="xs">
