@@ -47,7 +47,10 @@ export default function Header({
   }, [session]);
 
   return (
-    <Paper radius={'xs'} style={{ position: 'fixed', top: 0, right: 0, left: 0, height: '5rem' }}>
+    <Paper
+      radius={'xs'}
+      style={{ position: 'fixed', top: 0, right: 0, left: 0, height: '5rem', zIndex: 9999 }}
+    >
       <Center style={{ height: '5rem', right: 10, position: 'fixed' }}>
         {debugMessages}
         {avatarUrl ? (
@@ -72,7 +75,7 @@ export default function Header({
           </UserActionMenu>
         )}
       </Center>
-      <Link href="/" passHref>
+      <Link href="/?cameFromNextJSRouting" passHref>
         <a>
           <div style={{ height: '5rem', position: 'fixed', width: '10rem', marginLeft: '5rem' }}>
             <Image src={eniv} layout="fill" />

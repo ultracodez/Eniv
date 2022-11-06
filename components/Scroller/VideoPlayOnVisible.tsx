@@ -53,8 +53,18 @@ export default function VideoPlayOnVisible({ video }: { video: HygraphVideoMetad
     >
       <Card.Section>
         <AspectRatio ratio={16 / 9}>
+          {/* 
+          
+          ***
+          NOTE: old poster was set using 
+
+          poster="https://images.pexels.com/photos/356079/pexels-photo-356079.jpeg?cs=srgb&dl=pexels-pixabay-356079.jpg&fm=jpg"
+          
+          ***
+          
+          */}
           <video
-            poster="https://images.pexels.com/photos/356079/pexels-photo-356079.jpeg?cs=srgb&dl=pexels-pixabay-356079.jpg&fm=jpg"
+            poster={video.cloudinaryId.replace(/(\.(?:mp4|m4v|avi|mov|webm|wmv))/i, '.png')}
             style={{ width: '100%' }}
             src={video.cloudinaryId}
             controls

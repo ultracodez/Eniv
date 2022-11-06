@@ -17,6 +17,7 @@ import get100Videos, { HygraphVideoMetadata } from './get100Videos';
 import VideoPlayOnVisible from './VideoPlayOnVisible';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 import { styled } from '@stitches/react';
+import { getJsonFromUrl } from '../helpers/getJsonFromUrl';
 
 const SCROLLBAR_SIZE = 10;
 
@@ -102,7 +103,17 @@ export default function VideoScroller() {
     <Box>
       <Paper radius={0}>
         <Group position="apart">
-          <Box sx={{ marginLeft: '25%' }}>
+          <Box
+            sx={(theme) => ({
+              [theme.fn.largerThan('sm')]: {
+                marginLeft: '25%',
+              },
+              [theme.fn.smallerThan('sm')]: {
+                marginLeft: '2rem',
+              },
+              //height: 'calc(100vh-5rem)',
+            })}
+          >
             <Checkbox
               labelPosition="left"
               label="Show unverified:"
@@ -111,7 +122,17 @@ export default function VideoScroller() {
               onChange={(event) => setIsShowingUnverified(event.currentTarget.checked)}
             />
           </Box>
-          <Box sx={{ marginRight: '25%' }}>
+          <Box
+            sx={(theme) => ({
+              [theme.fn.largerThan('sm')]: {
+                marginRight: '25%',
+              },
+              [theme.fn.smallerThan('sm')]: {
+                marginRight: '2rem',
+              },
+              //height: 'calc(100vh-5rem)',
+            })}
+          >
             <Center sx={{ height: '2.9rem' }}>
               <Group>
                 <Text>Sort By: </Text>
@@ -119,7 +140,7 @@ export default function VideoScroller() {
                   value={sortSelectValue}
                   onChange={(event) => setSortSelectValue(event.currentTarget.value)}
                   placeholder="Pick one"
-                  data={['Views', 'Upvotes', 'Published']}
+                  data={['Views', 'Upvotes', 'Uploaded']}
                 />
               </Group>
             </Center>
@@ -146,6 +167,7 @@ export default function VideoScroller() {
             style={{
               scrollSnapType: 'y mandatory',
               //overflowY: 'scroll'
+              zIndex: 0,
               height: `calc(100vh - 5rem${' - 3rem'})`,
               width: '100%',
             }}
@@ -161,9 +183,10 @@ export default function VideoScroller() {
                   } else if (sortSelectValue === 'Views') {
                     return -(vid1.views - vid2.views);
                   } else {
-                    return (
-                      new Date(vid1.createdAt).getSeconds() - new Date(vid2.createdAt).getSeconds()
-                    );
+                    return new Date(vid1.createdAt).getSeconds() <
+                      new Date(vid2.createdAt).getSeconds()
+                      ? -1
+                      : 0;
                   }
                 })
                 .map((vid: HygraphVideoMetadata) => {

@@ -1,4 +1,13 @@
-import { createStyles, Image, Container, Title, Text, Button, SimpleGrid, Center } from '@mantine/core';
+import {
+  createStyles,
+  Image,
+  Container,
+  Title,
+  Text,
+  Button,
+  SimpleGrid,
+  Center,
+} from '@mantine/core';
 import Link from 'next/link';
 import image from '../public/404.svg';
 
@@ -39,10 +48,14 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export default function Page404() {
-    return (<Center style={{height:"calc(100vh)"}}><NotFoundImage style={{marginBottom:"7%"}}/></Center>)
+  return (
+    <Center style={{ height: 'calc(100vh)' }}>
+      <NotFoundImage style={{ marginBottom: '7%' }} />
+    </Center>
+  );
 }
 
-export function NotFoundImage(props:any) {
+export function NotFoundImage(props: any) {
   const { classes } = useStyles();
 
   return (
@@ -55,10 +68,10 @@ export function NotFoundImage(props:any) {
             Page you are trying to open does not exist. You may have mistyped the address, or the
             page has been moved to another URL. If you think this is an error contact support.
           </Text>
-          <Link href="/" passHref>
-          <Button variant="outline" component='a' size="md" mt="xl" className={classes.control}>
-            Get back to home page
-          </Button>
+          <Link href="/?cameFromNextJSRouting" passHref>
+            <Button variant="outline" component="a" size="md" mt="xl" className={classes.control}>
+              Get back to home page
+            </Button>
           </Link>
         </div>
         <Image src={image.src} className={classes.desktopImage} />

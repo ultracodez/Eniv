@@ -32,25 +32,15 @@ import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'; // https://github.com/
 import { hideNotification, showNotification } from '@mantine/notifications';
 import { useForm } from '@mantine/form';
 import { uploadFile } from '../Cloudinary/uploadFile';
-
-function getJsonFromUrl(url) {
-  if (!url) url = location.search;
-  var query = url.substr(1);
-  var result = {};
-  query.split('&').forEach(function (part) {
-    var item = part.split('=');
-    result[item[0]] = decodeURIComponent(item[1]);
-  });
-  return result;
-}
+import { getJsonFromUrl } from '../helpers/getJsonFromUrl';
 
 export { Editor };
 export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirectUrl,*/ ...props }) {
-  const params = getJsonFromUrl(window?.location?.search);
+  var params = getJsonFromUrl(window?.location?.search);
   //make sure the user didnt come from nextjs routing
   useEffect(() => {
     //alert(JSON.stringify(params));
-    //if (params.cameFromNextJSRouting) alert('you came from client side routing');
+    if (params?.cameFromNextJSRouting) window.location.replace('/upload'); //alert('you came from client side routing');
   }, []);
 
   const [modalOpened, setModalOpened] = useState(false);
@@ -120,11 +110,28 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
   const [lastDir, setLastDir] = useState('');
 
   function setAndUpdateRangeValue(progPercentt) {
+    /*
     var start = Math.round(progPercentt[0] / 10);
     var end = Math.round(progPercentt[1] / 10);
     var len = Math.round((progPercentt[1] - progPercentt[0]) / 10);
     var oldStart = Math.round(rangeValue[0] / 10);
     var oldEnd = Math.round(rangeValue[1] / 10);
+    /* */
+
+    var start = progPercentt[0] / 10;
+    var end = progPercentt[1] / 10;
+    var len = (progPercentt[1] - progPercentt[0]) / 10;
+    var oldStart = rangeValue[0] / 10;
+    var oldEnd = rangeValue[1] / 10;
+
+    const curPosPercentator = playVideoRef.current.duration;
+
+    if (oldStart !== start) {
+      setProgress((start / curPosPercentator) * 100);
+    } //console.log(start); //setProgress((oldStart / curPosPercentator) * 100); //console.log('start changed');
+    if (oldEnd !== end) {
+      setProgress((start / curPosPercentator) * 100);
+    }
 
     var rRangeValue = rangeValue;
 
@@ -460,6 +467,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
               playPause();
             }}
             onTimeUpdate={() => {
+              console.log((playVideoRef.current.currentTime / playVideoRef.current.duration) * 100);
               setProgress((playVideoRef.current.currentTime / playVideoRef.current.duration) * 100);
               //setSeekerBar(progressBarRef.current.style.width);
             }}
