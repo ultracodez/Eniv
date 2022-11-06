@@ -36,6 +36,8 @@
     "@mantine/notifications": "latest",
     "@mantine/prism": "latest",
     "@next/bundle-analyzer": "^12.3.1",
+    "@radix-ui/react-scroll-area": "^1.0.1",
+    "@stitches/react": "^1.2.8",
     "@supabase/auth-helpers-nextjs": "^0.4.4",
     "@supabase/auth-helpers-react": "^0.3.1",
     "@supabase/auth-ui-react": "^0.2.5",
