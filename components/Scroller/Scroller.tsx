@@ -157,9 +157,9 @@ export default function VideoScroller() {
                 })
                 .sort((vid1, vid2) => {
                   if (sortSelectValue === 'Upvotes') {
-                    return vid1.upvotes - vid2.upvotes;
+                    return -(vid1.upvotes - vid2.upvotes);
                   } else if (sortSelectValue === 'Views') {
-                    return vid1.views - vid2.views;
+                    return -(vid1.views - vid2.views);
                   } else {
                     return (
                       new Date(vid1.createdAt).getSeconds() - new Date(vid2.createdAt).getSeconds()
