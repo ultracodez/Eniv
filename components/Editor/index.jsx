@@ -210,7 +210,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
       );*/
 
       alert('**THIS IS A TEST BRANCH**');
-      ffmpeg.current.run(
+      await ffmpeg.current.run(
         '-i',
         'myFile.mp4',
         '-ss',
@@ -223,7 +223,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
         '30',
         'output.mp4'
       );
-      alert('THIS IS A TEST BRANCH');
+      alert('THIS IS A TEST BRANCH * async');
       setRenderProgress(70);
       //Disabling new-cap for FS function
       // eslint-disable-next-line new-cap
