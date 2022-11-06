@@ -181,20 +181,24 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
 
     console.log('Trimmed Duration: ', trimmedVideo);
     console.log('Trim End: ', trimEnd);
-    setRenderProgress(10);
+    //setRenderProgress(10);
+
+    setModalOpened(false);
     try {
       //Disabling new-cap for FS function
       // eslint-disable-next-line new-cap
       ffmpeg.current.FS('writeFile', 'myFile.mp4', await fetchFile(videoUrl));
-      setRenderProgress(30);
+      //setRenderProgress(30);
       ffmpeg.current.setProgress(({ ratio }) => {
         console.log('ffmpeg progress: ', ratio);
+        console.log('human readable ffmpeg progress: ', Math.round(ratio * 100));
         if (ratio < 0) {
           //setProgress(0);
-        }
+          setRenderProgress(0);
+        } else setRenderProgress(Math.round(ratio * 100));
         //setProgress(Math.round(ratio * 100));
       });
-      setRenderProgress(50);
+      //setRenderProgress(50);
       //LEGACY: TRIMMING IS NOT ACCURATE
       /*await ffmpeg.current.run(
         '-ss',
@@ -210,7 +214,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
       );*/
 
       alert('**THIS IS A TEST BRANCH**');
-      await ffmpeg.current.run(
+      /*await ffmpeg.current.run(
         '-i',
         'myFile.mp4',
         '-ss',
@@ -222,21 +226,31 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
         '-crf',
         '30',
         'output.mp4'
+      );*/
+      await ffmpeg.current.run(
+        '-ss',
+        `${trimStart}`,
+        '-accurate_seek',
+        '-i',
+        'myFile.mp4',
+        '-to',
+        `${trimmedVideo}`,
+        'output.mp4'
       );
       alert('THIS IS A TEST BRANCH * async');
-      setRenderProgress(70);
+      //setRenderProgress(70);
       //Disabling new-cap for FS function
       // eslint-disable-next-line new-cap
       const data = ffmpeg.current.FS('readFile', 'output.mp4');
-      setRenderProgress(80);
+      //setRenderProgress(80);
       var blobby = new Blob([data.buffer], { type: 'video/mp4' });
       const url = URL.createObjectURL(blobby);
-      setRenderProgress(90);
+      //setRenderProgress(90);
       setTrimmedVideo(url);
       setTrimmingDone(true);
       // setLottiePlaying(false)
 
-      setRenderProgress(100);
+      //setRenderProgress(100);
       setProgressColor('green');
 
       showNotification({
@@ -318,7 +332,6 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
         });
         setModalSubmitButtonDisabled(false);
       } finally {
-        setModalOpened(false);
       }
 
       /*event.preventDefault();
