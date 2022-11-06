@@ -195,7 +195,8 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
         //setProgress(Math.round(ratio * 100));
       });
       setRenderProgress(50);
-      await ffmpeg.current.run(
+      //LEGACY: TRIMMING IS NOT ACCURATE
+      /*await ffmpeg.current.run(
         '-ss',
         `${trimStart}`,
         '-accurate_seek',
@@ -206,7 +207,23 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
         '-codec',
         'copy',
         'output.mp4'
+      );*/
+
+      alert('**THIS IS A TEST BRANCH**');
+      ffmpeg.current.run(
+        '-i',
+        'myFile.mp4',
+        '-ss',
+        `${trimStart}`,
+        '-to',
+        `${trimmedVideo}`,
+        '-c:v',
+        'libx264',
+        '-crf',
+        '30',
+        'output.mp4'
       );
+      alert('THIS IS A TEST BRANCH');
       setRenderProgress(70);
       //Disabling new-cap for FS function
       // eslint-disable-next-line new-cap
@@ -327,6 +344,13 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
 
       setProgressY(JSON.stringify(error.stack));
       setProgressColor('red');
+      alert(
+        JSON.stringify(error) +
+          ' ' +
+          JSON.stringify(error.cause) +
+          ' ' +
+          JSON.stringify(error.stack)
+      );
 
       setModalSubmitButtonDisabled(false);
     }
