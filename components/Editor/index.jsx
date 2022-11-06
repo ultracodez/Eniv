@@ -37,11 +37,6 @@ import { getJsonFromUrl } from '../helpers/getJsonFromUrl';
 export { Editor };
 export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirectUrl,*/ ...props }) {
   var params = getJsonFromUrl(window?.location?.search);
-  //make sure the user didnt come from nextjs routing
-  useEffect(() => {
-    //alert(JSON.stringify(params));
-    if (params?.cameFromNextJSRouting) window.location.replace('/upload'); //alert('you came from client side routing');
-  }, []);
 
   const [modalOpened, setModalOpened] = useState(false);
 
@@ -98,6 +93,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
 
   function setAndUpdateProgress(progPercent) {
     playVideoRef.current.currentTime = (progPercent * playVideoRef.current.duration) / 100;
+
     //setProgressY((progPercent * playVideoRef.current.duration) / 100);
     // setProgress(progPercent);
     //playVideoRef.current.currentTime = 76 * progPercent;
@@ -106,7 +102,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
   const [trimStart, setTrimStart] = useState(0);
   const [trimEnd, setTrimEnd] = useState(100);
 
-  const [rangeValue, setRangeValue] = useState([20, 80]);
+  const [rangeValue, setRangeValue] = useState([20, 30]);
   const [lastDir, setLastDir] = useState('');
 
   function setAndUpdateRangeValue(progPercentt) {
@@ -128,9 +124,13 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
 
     if (oldStart !== start) {
       setProgress((start / curPosPercentator) * 100);
+      playVideoRef.current.currentTime =
+        (start / curPosPercentator) * playVideoRef.current.duration;
     } //console.log(start); //setProgress((oldStart / curPosPercentator) * 100); //console.log('start changed');
     if (oldEnd !== end) {
-      setProgress((start / curPosPercentator) * 100);
+      //setProgress((start / curPosPercentator) * 100);
+      //playVideoRef.current.currentTime =
+      //  (start / curPosPercentator) * playVideoRef.current.duration;
     }
 
     var rRangeValue = rangeValue;
