@@ -13,7 +13,7 @@ import {
 } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { hygraph } from '../Hygraph';
-import get100Videos from './get100Videos';
+import get100Videos, { HygraphVideoMetadata } from './get100Videos';
 import VideoPlayOnVisible from './VideoPlayOnVisible';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 import { styled } from '@stitches/react';
@@ -83,12 +83,14 @@ const ScrollAreaThumb = StyledThumb;
 const ScrollAreaCorner = StyledCorner;
 
 export default function VideoScroller() {
-  const [videoList, setVideoList] = useState<any[]>([]);
+  const [videoList, setVideoList] = useState<HygraphVideoMetadata[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { colorScheme } = useMantineColorScheme();
+  const [isShowingUnverified, setIsShowingUnverified] = useState(false);
+  const [sortSelectValue, setSortSelectValue] = useState<string>('Upvotes');
 
   //load initial function
-  const callback = (e: any) => {
+  const callback = (e: HygraphVideoMetadata[]) => {
     setIsLoading(false);
     setVideoList(e);
   };
@@ -98,21 +100,27 @@ export default function VideoScroller() {
 
   return (
     <Box>
-      <Paper radius={0} style={{ position: 'relative', right: 0, left: 0, height: '3rem' }}>
+      <Paper radius={0}>
         <Group position="apart">
           <Box sx={{ marginLeft: '25%' }}>
             <Checkbox
               labelPosition="left"
               label="Show unverified:"
               color="teal"
-              defaultChecked={false}
+              checked={isShowingUnverified}
+              onChange={(event) => setIsShowingUnverified(event.currentTarget.checked)}
             />
           </Box>
           <Box sx={{ marginRight: '25%' }}>
             <Center sx={{ height: '2.9rem' }}>
               <Group>
                 <Text>Sort By: </Text>
-                <NativeSelect placeholder="Pick one" data={['Views', 'Upvotes', 'Published']} />
+                <NativeSelect
+                  value={sortSelectValue}
+                  onChange={(event) => setSortSelectValue(event.currentTarget.value)}
+                  placeholder="Pick one"
+                  data={['Views', 'Upvotes', 'Published']}
+                />
               </Group>
             </Center>
           </Box>
@@ -143,16 +151,24 @@ export default function VideoScroller() {
             }}
           >
             <ScrollAreaViewport>
-              {videoList.map((vid: any) => {
-                return (
-                  <VideoPlayOnVisible
-                    description="This is my new epic video! Check out my website: https://ultracodez.com"
-                    url={vid.cloudinaryId}
-                    title={vid.title}
-                    verified={vid.verified ?? false}
-                  />
-                );
-              })}
+              {videoList
+                .filter((vid: HygraphVideoMetadata) => {
+                  return isShowingUnverified || vid.verified === true;
+                })
+                .sort((vid1, vid2) => {
+                  if (sortSelectValue === 'Upvotes') {
+                    return vid1.upvotes - vid2.upvotes;
+                  } else if (sortSelectValue === 'Views') {
+                    return vid1.views - vid2.views;
+                  } else {
+                    return (
+                      new Date(vid1.createdAt).getSeconds() - new Date(vid2.createdAt).getSeconds()
+                    );
+                  }
+                })
+                .map((vid: HygraphVideoMetadata) => {
+                  return <VideoPlayOnVisible video={vid} />;
+                })}
             </ScrollAreaViewport>
             <ScrollAreaScrollbar orientation="vertical">
               <ScrollAreaThumb />

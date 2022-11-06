@@ -40,10 +40,10 @@ export default function UserActionMenu({
   }
 
   return (
-    <Menu styles={{ dropdown: {} }} shadow="md" width={200}>
+    <Menu shadow="md" width={200}>
       <Menu.Target>{children}</Menu.Target>
 
-      <Menu.Dropdown sx={{ zIndex: 9999 }}>
+      <Menu.Dropdown>
         <Menu.Label>Application</Menu.Label>
         <Link href="/upload?cameFromNextJSRouting" passHref>
           <Menu.Item icon={<IconCloudUpload size={14} />} component="a">
