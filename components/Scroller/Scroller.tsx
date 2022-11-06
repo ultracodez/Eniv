@@ -1,4 +1,16 @@
-import { Box, Center, LoadingOverlay, useMantineColorScheme } from '@mantine/core';
+import {
+  Box,
+  Center,
+  Checkbox,
+  Divider,
+  Group,
+  LoadingOverlay,
+  NativeSelect,
+  Paper,
+  Switch,
+  Text,
+  useMantineColorScheme,
+} from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { hygraph } from '../Hygraph';
 import get100Videos from './get100Videos';
@@ -79,58 +91,79 @@ export default function VideoScroller() {
   const callback = (e: any) => {
     setIsLoading(false);
     setVideoList(e);
-    alert(JSON.stringify(e));
   };
   useEffect(() => {
     get100Videos(callback);
   }, []);
 
   return (
-    <Center>
-      <Box
-        sx={(theme) => ({
-          [theme.fn.largerThan('lg')]: {
-            width: '50%',
-            height: '90%',
-          },
-          //height: 'calc(100vh-5rem)',
-          position: 'relative',
-        })}
-      >
-        <LoadingOverlay
-          visible={isLoading}
-          overlayBlur={2}
-          overlayColor={colorScheme === 'dark' ? 'dark' : 'light'}
-        />
-        <ScrollArea
-          style={{
-            scrollSnapType: 'y mandatory',
-            //overflowY: 'scroll'
-            height: 'calc(100vh - 5rem)',
-            width: '100%',
-          }}
+    <Box>
+      <Paper radius={0} style={{ position: 'relative', right: 0, left: 0, height: '3rem' }}>
+        <Group position="apart">
+          <Box sx={{ marginLeft: '25%' }}>
+            <Checkbox
+              labelPosition="left"
+              label="Show unverified:"
+              color="teal"
+              defaultChecked={false}
+            />
+          </Box>
+          <Box sx={{ marginRight: '25%' }}>
+            <Center sx={{ height: '2.9rem' }}>
+              <Group>
+                <Text>Sort By: </Text>
+                <NativeSelect placeholder="Pick one" data={['Views', 'Upvotes', 'Published']} />
+              </Group>
+            </Center>
+          </Box>
+        </Group>
+      </Paper>
+      <Center>
+        <Box
+          sx={(theme) => ({
+            [theme.fn.largerThan('lg')]: {
+              width: '50%',
+              height: '90%',
+            },
+            //height: 'calc(100vh-5rem)',
+            position: 'relative',
+          })}
         >
-          <ScrollAreaViewport>
-            {videoList.map((vid: any) => {
-              return (
-                <VideoPlayOnVisible
-                  description="This is my new epic video! Check out my website: https://ultracodez.com"
-                  url={vid.cloudinaryId}
-                  title={vid.title}
-                  verified={vid.verified ?? false}
-                />
-              );
-            })}
-          </ScrollAreaViewport>
-          <ScrollAreaScrollbar orientation="vertical">
-            <ScrollAreaThumb />
-          </ScrollAreaScrollbar>
-          <ScrollAreaScrollbar orientation="horizontal">
-            <ScrollAreaThumb />
-          </ScrollAreaScrollbar>
-          <ScrollAreaCorner />
-        </ScrollArea>
-      </Box>
-    </Center>
+          <LoadingOverlay
+            visible={isLoading}
+            overlayBlur={2}
+            overlayColor={colorScheme === 'dark' ? 'dark' : 'light'}
+          />
+          <ScrollArea
+            style={{
+              scrollSnapType: 'y mandatory',
+              //overflowY: 'scroll'
+              height: `calc(100vh - 5rem${' - 3rem'})`,
+              width: '100%',
+            }}
+          >
+            <ScrollAreaViewport>
+              {videoList.map((vid: any) => {
+                return (
+                  <VideoPlayOnVisible
+                    description="This is my new epic video! Check out my website: https://ultracodez.com"
+                    url={vid.cloudinaryId}
+                    title={vid.title}
+                    verified={vid.verified ?? false}
+                  />
+                );
+              })}
+            </ScrollAreaViewport>
+            <ScrollAreaScrollbar orientation="vertical">
+              <ScrollAreaThumb />
+            </ScrollAreaScrollbar>
+            <ScrollAreaScrollbar orientation="horizontal">
+              <ScrollAreaThumb />
+            </ScrollAreaScrollbar>
+            <ScrollAreaCorner />
+          </ScrollArea>
+        </Box>
+      </Center>
+    </Box>
   );
 }

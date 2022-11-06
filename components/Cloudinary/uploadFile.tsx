@@ -71,7 +71,7 @@ export function uploadFile(
       );
 
       onSuccess();
-      alert(JSON.stringify(res));
+      //alert(JSON.stringify(res));
       //document.getElementById('gallery').appendChild(img);
     } else {
     }
