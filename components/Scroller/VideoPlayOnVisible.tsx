@@ -1,14 +1,41 @@
-import { AspectRatio, Badge, Card, Center, Divider, Group, Text } from '@mantine/core';
-import { useEffect, useRef } from 'react';
+import { AspectRatio, Badge, Button, Card, Center, Divider, Group, Text } from '@mantine/core';
+import { useEffect, useRef, useState } from 'react';
 import sanitize from 'sanitize-html';
 import { capitalizeFirstLetter } from '../helpers/capitalizeFirstLetter';
 import { sanitizeAndAddLinks } from '../helpers/sanitize';
 import useElementOnScreen, { defaultOptions as defaultIoOptions } from './useElementOnScreen';
 import { HygraphVideoMetadata } from './get100Videos';
+import { IconCaretUp, IconEye } from '@tabler/icons';
+import { updateVideoViews, updateVideoVotes } from './updateVideo';
+
+const updateVideoDataForVideo = (video: HygraphVideoMetadata) => {
+  //alert('yep');
+  updateVideoVotes(video, video.upvotes + 1);
+};
 
 export default function VideoPlayOnVisible({ video }: { video: HygraphVideoMetadata }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isOnScreen = useElementOnScreen(defaultIoOptions, containerRef);
+  const [hasVoted, setHasVoted] = useState(false);
+  const [fHasVoted, setFHasVoted] = useState(false);
+  const [hasMarkedViewed, setHasMarkedViewed] = useState(false);
+
+  const finishedWatchingVideo = () => {
+    if (!hasMarkedViewed) updateVideoViews(video);
+    setHasMarkedViewed(true);
+  };
+
+  const voteUpClicked = () => {
+    const curVote = !hasVoted;
+    setHasVoted(!hasVoted);
+    //alert('wow ' + curVote + ' w ' + !fHasVoted + ' w ' + (curVote && !fHasVoted));
+    if (curVote && !fHasVoted) {
+      //alert('yes');
+      updateVideoDataForVideo(video);
+    }
+
+    setFHasVoted(true);
+  };
 
   return (
     <Card
@@ -31,6 +58,7 @@ export default function VideoPlayOnVisible({ video }: { video: HygraphVideoMetad
             style={{ width: '100%' }}
             src={video.cloudinaryId}
             controls
+            onEnded={finishedWatchingVideo}
           ></video>
         </AspectRatio>
       </Card.Section>
@@ -47,17 +75,30 @@ export default function VideoPlayOnVisible({ video }: { video: HygraphVideoMetad
         </Badge>
       </Group>
 
-      <Text
-        size="sm"
-        color="dimmed"
-        dangerouslySetInnerHTML={{
-          __html: sanitizeAndAddLinks(
-            video.description
-              ? video.description
-              : "There's no description for this video. <br/> :)"
-          ),
-        }}
-      />
+      <Group position="apart">
+        <Text
+          size="sm"
+          color="dimmed"
+          dangerouslySetInnerHTML={{
+            __html: sanitizeAndAddLinks(
+              video.description
+                ? video.description
+                : "There's no description for this video. <br/> :)"
+            ),
+          }}
+        />
+        <Group spacing={0}>
+          <Button onClick={voteUpClicked} compact variant="subtle">
+            <IconCaretUp />
+            {video.upvotes + (hasVoted ? 1 : 0)}
+          </Button>
+
+          <Button compact variant="subtle" color={'gray'}>
+            <IconEye size={20} style={{ marginRight: 5 }} />
+            {video.views + (hasMarkedViewed ? 1 : 0)}
+          </Button>
+        </Group>
+      </Group>
     </Card>
   );
 }

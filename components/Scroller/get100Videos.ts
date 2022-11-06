@@ -16,6 +16,7 @@ export default async function get100Videos(callback: Function) {
     }
   }
   `);
+
   callback(res.videos as HygraphVideoMetadata[]);
 }
 
