@@ -1,4 +1,4 @@
-import { Center, LoadingOverlay, useMantineColorScheme } from '@mantine/core';
+import { Box, Center, LoadingOverlay, useMantineColorScheme } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { hygraph } from '../Hygraph';
 import get100Videos from './get100Videos';
@@ -20,13 +20,16 @@ export default function VideoScroller() {
   }, []);
 
   return (
-    <Center style={{}}>
-      <div
-        style={{
-          width: '50%',
-          height: 'calc(100vh-5rem)',
+    <Center>
+      <Box
+        sx={(theme) => ({
+          [theme.fn.largerThan('lg')]: {
+            width: '50%',
+            height: '90%',
+          },
+          //height: 'calc(100vh-5rem)',
           position: 'relative',
-        }}
+        })}
       >
         <LoadingOverlay
           visible={isLoading}
@@ -52,7 +55,7 @@ export default function VideoScroller() {
             );
           })}
         </div>
-      </div>
+      </Box>
     </Center>
   );
 }
