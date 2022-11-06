@@ -49,8 +49,8 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
   const params = getJsonFromUrl(window?.location?.search);
   //make sure the user didnt come from nextjs routing
   useEffect(() => {
-    alert(JSON.stringify(params));
-    if (params.cameFromNextJSRouting) alert('you came from client side routing');
+    //alert(JSON.stringify(params));
+    //if (params.cameFromNextJSRouting) alert('you came from client side routing');
   }, []);
 
   const [modalOpened, setModalOpened] = useState(false);
@@ -117,6 +117,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
   const [trimEnd, setTrimEnd] = useState(100);
 
   const [rangeValue, setRangeValue] = useState([20, 80]);
+  const [lastDir, setLastDir] = useState('');
 
   function setAndUpdateRangeValue(progPercentt) {
     var start = Math.round(progPercentt[0] / 10);
@@ -133,11 +134,16 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
         //setProgressY('whaaaa');
       } else if (end > oldEnd) {
         //setProgressY('end bigger than oldEnd');
-        rRangeValue = [start * 10 + 15, end * 10];
+        rRangeValue = [start * 10 + 1, end * 10];
+        setLastDir('end');
+        setProgress((end / playVideoRef?.current?.duration) * 100);
       } else if (start < oldStart) {
         //setProgressY('start bigger than oldStart');
 
-        rRangeValue = [start * 10, end * 10 - 15];
+        rRangeValue = [start * 10, end * 10 - 1];
+        setLastDir('start');
+        setProgress((start / playVideoRef?.current?.duration) * 100);
+        //setProgress(start*3);
       }
 
       // Incase the user clicked
@@ -147,6 +153,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
       if (length > MaxLength) {
         if (end > oldEnd) {
           rRangeValue = [end * 10 - MaxLength * 10, end * 10];
+          //rRangeValue = [end * 10 - MaxLength * 10, end * 10];
           //setProgressY('ENDNDNENEND');
         } else if (start < oldStart) {
           //setProgressY('ayuq3truehu');
@@ -157,6 +164,11 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
       }
     } else {
       rRangeValue = progPercentt;
+      if (lastDir === 'start') {
+        //setProgress((progPercentt[0] / playVideoRef?.current?.duration) * 100);
+      } else if (lastDir === 'end') {
+        //setProgress((progPercentt[1] / playVideoRef?.current?.duration) * 100);
+      }
       //setProgressY(`Start: ${start}. End: ${end}. Duration: ${len}.`);
     }
 
@@ -395,6 +407,7 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
   return (
     <>
       {JSON.stringify(params)}
+      {rangeValue[1]}
       <Modal
         opened={modalOpened}
         onClose={() => setModalOpened(false)}
