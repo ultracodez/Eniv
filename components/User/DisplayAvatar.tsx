@@ -67,8 +67,6 @@ export default function DisplayAvatar({ size }: { size: any }) {
 
   return (
     <div>
-      {avatarUrl} {':('}
-      {session?.user?.email}
       <img
         src={avatarUrl ?? ''}
         alt={avatarUrl}
