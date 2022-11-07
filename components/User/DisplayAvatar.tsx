@@ -66,7 +66,6 @@ export default function DisplayAvatar({ size }: { size: any }) {
   }
 
   return (
-    <div>
       <img
         src={avatarUrl ?? ''}
         alt={avatarUrl}
@@ -77,7 +76,6 @@ export default function DisplayAvatar({ size }: { size: any }) {
           borderRadius: '10rem',
         }}
       />
-    </div>
   );
 }
 /**/
