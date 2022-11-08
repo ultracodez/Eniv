@@ -87,9 +87,12 @@ export default function UserActionMenu({
         {role === 'admin' ? (
           <>
             <Menu.Label>Moderation</Menu.Label>
-            <Menu.Item color="green" icon={<IconSettings size={14} />}>
-              Moderation Settings
-            </Menu.Item>
+
+            <Link href="/modsettings?cameFromNextJSRouting" passHref>
+              <Menu.Item color="green" icon={<IconSettings size={14} />} component="a">
+                Moderation Settings
+              </Menu.Item>
+            </Link>
             <Menu.Divider />
           </>
         ) : (

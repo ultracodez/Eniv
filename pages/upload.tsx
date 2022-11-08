@@ -6,8 +6,12 @@ import { IconUpload, IconVideo, IconX } from '@tabler/icons';
 import { Editor } from '../components/Editor';
 import React from 'react';
 import { getJsonFromUrl } from '../components/helpers/getJsonFromUrl';
+import { useSession } from '@supabase/auth-helpers-react';
 
 export default function HomePage() {
+  const session = useSession();
+  if(!session) 
+
   var params: any;
   if (typeof window !== 'undefined') params = getJsonFromUrl(window?.location?.search);
   //make sure the user didnt come from nextjs routing

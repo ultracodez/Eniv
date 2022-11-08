@@ -16,7 +16,7 @@ const Home = () => {
       <div>
         {!session ? (
           <Auth
-            providers={['github']}
+            providers={['github','discord']}
             supabaseClient={supabase}
             appearance={{ theme: ThemeSupa }}
             theme={csTheme === 'dark' ? 'dark' : 'default'}
