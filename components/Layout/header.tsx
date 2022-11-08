@@ -1,4 +1,4 @@
-import { Avatar, Button, Center, Divider, Paper } from '@mantine/core';
+import { Avatar, Button, Center, Divider, Paper, useMantineColorScheme } from '@mantine/core';
 import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
 import Image from 'next/image';
 import eniv from '../../public/eniv.png';
@@ -17,6 +17,7 @@ export default function Header({
   oldSession?: AuthSession;
   extraProps: any;
 }) {
+  const { colorScheme } = useMantineColorScheme();
   const session = useSession();
   const supabase = useSupabaseClient();
 
@@ -49,7 +50,15 @@ export default function Header({
   return (
     <Paper
       radius={'xs'}
-      style={{ position: 'fixed', top: 0, right: 0, left: 0, height: '5rem', zIndex: 9999 }}
+      style={{
+        position: 'fixed',
+        top: 0,
+        right: 0,
+        left: 0,
+        height: '5rem',
+        zIndex: 9999,
+        backgroundColor: '#01b686',
+      }}
     >
       <Center style={{ height: '5rem', right: 10, position: 'fixed' }}>
         {debugMessages}
@@ -84,7 +93,6 @@ export default function Header({
       </Link>
       {/* Padding */}
       <div style={{ height: '84%' }}></div>
-      <Divider my="sm" variant="dashed" />
     </Paper>
   );
 }

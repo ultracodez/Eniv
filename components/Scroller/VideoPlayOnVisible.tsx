@@ -48,6 +48,7 @@ export default function VideoPlayOnVisible({ video }: { video: HygraphVideoMetad
         marginTop: '2.5rem',
         marginBottom: '2.5rem',
         borderRadius: '0.5rem',
+        backgroundColor: theme.colorScheme === 'dark' ? undefined : '#F1F3F5',
       })}
       ref={containerRef}
     >
