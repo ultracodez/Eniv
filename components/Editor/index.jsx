@@ -34,9 +34,46 @@ import { hideNotification, showNotification } from '@mantine/notifications';
 import { useForm } from '@mantine/form';
 import { uploadFile } from '../Cloudinary/uploadFile';
 import { getJsonFromUrl } from '../helpers/getJsonFromUrl';
+import { useSession, useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 
 export { Editor };
 export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirectUrl,*/ ...props }) {
+  const supabase = useSupabaseClient();
+  const session = useSession();
+  const [username, setUsername] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const user = useUser();
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getProfile();
+  }, [session]);
+
+  async function getProfile() {
+    try {
+      setLoading(true);
+
+      let { data, error, status } = await supabase
+        .from('enivprofiles')
+        .select(`username, full_name, avatar_url, role`)
+        .filter('id', 'eq', user?.id)
+        .single();
+      if (error && status !== 406) {
+        throw error;
+      }
+
+      if (data) {
+        setUsername(data.username);
+        setAvatarUrl(data.avatar_url);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   var params = getJsonFromUrl(window?.location?.search);
 
   const [modalOpened, setModalOpened] = useState(false);
@@ -264,11 +301,25 @@ export default function Editor({ videoUrl, /* timings, setTimings,*/ /* redirect
         const data = await response.json();*/
         //setPublicId(data.public_id);
 
-        uploadFile(blobby, cloudinaryCloudName, onSuccess, onError, {
-          title: modalForm.values.vidTitle,
-          description: modalForm.values.vidDescription,
-        });
+        try {
+          uploadFile(blobby, cloudinaryCloudName, onSuccess, onError, {
+            title: modalForm.values.vidTitle,
+            description: modalForm.values.vidDescription,
+            uploaderName: username,
+            uploaderAvatarUrl: avatarUrl,
+          });
+        } catch (error) {
+          hideNotification('uploadNot');
 
+          await new Promise((resolve) => setTimeout(resolve, 300));
+          showNotification({
+            title: 'Upload Failed',
+            message: error.message,
+            icon: <IconAlertCircle />,
+            color: 'red',
+          });
+          setModalSubmitButtonDisabled(false);
+        }
         async function onSuccess() {
           hideNotification('uploadNot');
 

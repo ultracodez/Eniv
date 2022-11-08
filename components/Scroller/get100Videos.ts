@@ -13,6 +13,8 @@ export default async function get100Videos(callback: Function) {
       verified
       description
       createdAt
+      uploaderName
+      uploaderAvatarUrl
     }
   }
   `);
@@ -30,4 +32,6 @@ export interface HygraphVideoMetadata {
   createdAt: string;
   description: string;
   verified: boolean;
+  uploaderName: string;
+  uploaderAvatarUrl: string;
 }

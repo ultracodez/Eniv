@@ -56,7 +56,7 @@ export default function Header({
       <Center style={{ height: '5rem', right: 10, position: 'fixed' }}>
         {debugMessages}
         {true ? (
-          <UserActionMenu supabase={supabase} loggedIn={true}>
+          <UserActionMenu supabase={supabase} loggedIn={session?.user.id ? true : false}>
             {/*<img
               style={{
                 objectFit: 'cover',
@@ -67,7 +67,9 @@ export default function Header({
               }}
               src={avatarUrl ?? ''}
             />*/}
-            <DisplayAvatar size={'3.5rem'} />
+            <div style={{ marginRight: '5rem' }}>
+              <DisplayAvatar size={'3.5rem'} />
+            </div>
           </UserActionMenu>
         ) : (
           <UserActionMenu supabase={supabase} loggedIn={session?.user.id ? true : false}>

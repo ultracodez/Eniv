@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSession, useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
-import { Center, Overlay } from '@mantine/core';
+import { Avatar, Center, Overlay } from '@mantine/core';
 import { useHover } from '@mantine/hooks';
 import { IconCamera } from '@supabase/ui';
 import { IconFileUpload } from '@tabler/icons';
@@ -11,13 +11,9 @@ export default function DisplayAvatar({ size }: { size: any }) {
   const supabase = useSupabaseClient();
   const session = useSession();
   const [avatarUrl, setAvatarUrl] = useState<string>();
-  const [uploading, setUploading] = useState(false);
-  const { hovered, ref } = useHover();
   const user = useUser();
 
   const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState(null);
-  const [fullname, setFullname] = useState(null);
 
   useEffect(() => {
     getProfile();
@@ -37,8 +33,6 @@ export default function DisplayAvatar({ size }: { size: any }) {
       }
 
       if (data) {
-        setUsername(data.username);
-        setFullname(data.full_name);
         setAvatarUrl(data.avatar_url);
       }
     } catch (error) {
@@ -66,16 +60,22 @@ export default function DisplayAvatar({ size }: { size: any }) {
   }
 
   return (
-      <img
-        src={avatarUrl ?? ''}
-        alt={avatarUrl}
-        className="avatar image"
-        style={{
-          height: size,
-          width: size,
-          borderRadius: '10rem',
-        }}
-      />
+    <div>
+      {avatarUrl ? (
+        <img
+          src={avatarUrl ?? ''}
+          alt={loading ? 'Loading' : 'Avatar'}
+          className="avatar image"
+          style={{
+            height: size,
+            width: size,
+            borderRadius: '10rem',
+          }}
+        />
+      ) : (
+        <Avatar style={{ width: size, height: size }} radius="xl" />
+      )}
+    </div>
   );
 }
 /**/
