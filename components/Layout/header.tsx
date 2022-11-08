@@ -1,7 +1,7 @@
 import { Avatar, Button, Center, Divider, Paper } from '@mantine/core';
 import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
 import Image from 'next/image';
-import eniv from '../../public/eniv.svg';
+import eniv from '../../public/eniv.png';
 import Link from 'next/link';
 import { AuthSession } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
