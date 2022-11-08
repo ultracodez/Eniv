@@ -1,6 +1,6 @@
 import { ReactJSXElement } from '@emotion/react/types/jsx-namespace';
 import { Menu, Button, Text, useMantineColorScheme } from '@mantine/core';
-import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import { useSession, useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { SupabaseClient } from '@supabase/supabase-js';
 import {
   IconSettings,
@@ -16,7 +16,7 @@ import {
   IconDoorEnter,
 } from '@tabler/icons';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function UserActionMenu({
   children,
@@ -28,6 +28,39 @@ export default function UserActionMenu({
   loggedIn: boolean;
   supabase: SupabaseClient;
 }) {
+  const session = useSession();
+  const [role, setRole] = useState<string>();
+  const user = useUser();
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getProfile();
+  }, [session]);
+
+  async function getProfile() {
+    try {
+      setLoading(true);
+
+      let { data, error, status } = await supabase
+        .from('enivprofiles')
+        .select(`username, full_name, avatar_url, role`)
+        .filter('id', 'eq', user?.id)
+        .single();
+      if (error && status !== 406) {
+        throw error;
+      }
+
+      if (data) {
+        setRole(data.role);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
   function logInOrOut() {
@@ -51,6 +84,20 @@ export default function UserActionMenu({
           </Menu.Item>
         </Link>
         <Menu.Divider />
+        {role === 'admin' ? (
+          <>
+            <Menu.Label>Moderation</Menu.Label>
+
+            <Link href="/modsettings?cameFromNextJSRouting" passHref>
+              <Menu.Item color="green" icon={<IconSettings size={14} />} component="a">
+                Moderation Settings
+              </Menu.Item>
+            </Link>
+            <Menu.Divider />
+          </>
+        ) : (
+          ''
+        )}
 
         <Menu.Label>Other</Menu.Label>
         <Menu.Item
@@ -67,7 +114,6 @@ export default function UserActionMenu({
             Settings
           </Menu.Item>
         </Link>
-
         <Menu.Item
           color={loggedIn ? 'red' : ''}
           onClick={logInOrOut}

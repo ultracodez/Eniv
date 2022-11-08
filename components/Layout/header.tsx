@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react';
 import { useSession, useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { getProfile } from '../Auth/getProfile';
 import avatarFetcher from '../User/avatarFetcher';
+import DisplayAvatar from '../User/DisplayAvatar';
+
 import UserActionMenu from '../User/Menu';
 
 export default function Header({
@@ -62,9 +64,9 @@ export default function Header({
     >
       <Center style={{ height: '5rem', right: 10, position: 'fixed' }}>
         {debugMessages}
-        {avatarUrl ? (
-          <UserActionMenu supabase={supabase} loggedIn={true}>
-            <img
+        {true ? (
+          <UserActionMenu supabase={supabase} loggedIn={session?.user.id ? true : false}>
+            {/*<img
               style={{
                 objectFit: 'cover',
                 borderRadius: '10rem',
@@ -73,7 +75,10 @@ export default function Header({
                 marginRight: '5rem',
               }}
               src={avatarUrl ?? ''}
-            />
+            />*/}
+            <div style={{ marginRight: '5rem' }}>
+              <DisplayAvatar size={'3.5rem'} />
+            </div>
           </UserActionMenu>
         ) : (
           <UserActionMenu supabase={supabase} loggedIn={session?.user.id ? true : false}>

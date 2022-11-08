@@ -1,4 +1,4 @@
-import { Anchor, Button, Container, Group, Slider, Text } from '@mantine/core';
+import { Anchor, Button, Center, Container, Group, Slider, Text, Title } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeToggle';
 import { Dropzone, FileWithPath } from '@mantine/dropzone';
@@ -6,8 +6,31 @@ import { IconUpload, IconVideo, IconX } from '@tabler/icons';
 import { Editor } from '../components/Editor';
 import React from 'react';
 import { getJsonFromUrl } from '../components/helpers/getJsonFromUrl';
+import { useSession } from '@supabase/auth-helpers-react';
+import Link from 'next/link';
 
 export default function HomePage() {
+  const session = useSession();
+  if (!session)
+    return (
+      <Container style={{ paddingTop: '10rem' }}>
+        <Title>Sorry, you need to be signed in to upload a video. </Title>
+        <Text>
+          <b>Why?</b> Often spam posting, bot posting or other such things are done without an
+          account. Accounts allow us to keep track of who uploaded what, as well as removing most of
+          the non-sophisticated bots that exist.
+          <b>Thanks for your cooperation. :{')'}</b>
+        </Text>
+        <Center style={{ paddingTop: '1rem' }}>
+          <Link href="/auth" passHref>
+            <Button component="a" color="grape">
+              Log In
+            </Button>
+          </Link>
+        </Center>
+      </Container>
+    );
+
   var params: any;
   if (typeof window !== 'undefined') params = getJsonFromUrl(window?.location?.search);
   //make sure the user didnt come from nextjs routing

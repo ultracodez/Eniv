@@ -3,6 +3,8 @@ import { hygraph } from '../Hygraph';
 interface VideoProperties {
   title: string;
   description: string;
+  uploaderAvatarUrl: string;
+  uploaderName: string;
 }
 
 export function uploadFile(
@@ -12,6 +14,8 @@ export function uploadFile(
   onError: Function,
   props: VideoProperties
 ) {
+  if (!props.uploaderName) throw new Error('Please set a valid username in Settings before uploading.');
+
   var url = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
   var xhr = new XMLHttpRequest();
   var fd = new FormData();
@@ -42,17 +46,25 @@ export function uploadFile(
 
       const res = await hygraph.request(
         `
-      mutation CreateVideo($title:String, $slug:String, $description:String) {
-        createVideo(data: { title: $title, cloudinaryId: $slug, description:$description, views:1,upvotes:1}) {
+      mutation CreateVideo($title:String, $slug:String, $description:String, $username: String, $userau: String) {
+        createVideo(data: { title: $title, cloudinaryId: $slug, description:$description, views:1,upvotes:1, uploaderName: $username, uploaderAvatarUrl: $userau}) {
           id
           title
           cloudinaryId
           description
           views
           upvotes
+          uploaderName
+          uploaderAvatarUrl
         }
       }`,
-        { title: props.title, description: props.description, slug: response.secure_url }
+        {
+          title: props.title,
+          description: props.description,
+          slug: response.secure_url,
+          username: props.uploaderName,
+          userau: props.uploaderAvatarUrl,
+        }
       );
 
       await hygraph.request(

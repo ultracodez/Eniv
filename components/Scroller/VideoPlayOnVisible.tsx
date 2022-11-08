@@ -1,12 +1,25 @@
-import { AspectRatio, Badge, Button, Card, Center, Divider, Group, Text } from '@mantine/core';
+import {
+  AspectRatio,
+  Badge,
+  Button,
+  Card,
+  Center,
+  Divider,
+  Group,
+  HoverCard,
+  Text,
+  useMantineColorScheme,
+} from '@mantine/core';
 import { useEffect, useRef, useState } from 'react';
 import sanitize from 'sanitize-html';
 import { capitalizeFirstLetter } from '../helpers/capitalizeFirstLetter';
 import { sanitizeAndAddLinks } from '../helpers/sanitize';
 import useElementOnScreen, { defaultOptions as defaultIoOptions } from './useElementOnScreen';
 import { HygraphVideoMetadata } from './get100Videos';
-import { IconCaretUp, IconEye } from '@tabler/icons';
-import { updateVideoViews, updateVideoVotes } from './updateVideo';
+import { IconCaretUp, IconCheck, IconEye, IconX } from '@tabler/icons';
+import { updateVideoVerified, updateVideoViews, updateVideoVotes } from './updateVideo';
+import { useSession, useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
+import { HoverCardDropdown } from '@mantine/core/lib/HoverCard/HoverCardDropdown/HoverCardDropdown';
 
 const updateVideoDataForVideo = (video: HygraphVideoMetadata) => {
   //alert('yep');
@@ -14,6 +27,63 @@ const updateVideoDataForVideo = (video: HygraphVideoMetadata) => {
 };
 
 export default function VideoPlayOnVisible({ video }: { video: HygraphVideoMetadata }) {
+  const supabase = useSupabaseClient();
+  const session = useSession();
+  const [role, setRole] = useState<string>();
+  const user = useUser();
+  const [isModeratorApproved, setIsModeratorApproved] = useState(video.verified);
+  const [isModeratorOverriden, setIsModeratorOverriden] = useState(false);
+
+  const { colorScheme } = useMantineColorScheme();
+
+  const [loading, setLoading] = useState(true);
+
+  const [videoUploaderAvatarUrl, setVideoUploaderAvatarUrl] = useState(video.uploaderAvatarUrl);
+
+  useEffect(() => {
+    if (videoUploaderAvatarUrl) downloadImage(videoUploaderAvatarUrl);
+  }, [videoUploaderAvatarUrl]);
+
+  async function downloadImage(path: string) {
+    try {
+      const { data, error } = await supabase.storage.from('avatars').download(path);
+      if (error) {
+        throw error;
+      }
+      const url = URL.createObjectURL(data);
+      setVideoUploaderAvatarUrl(url);
+    } catch (error) {
+      console.log('Error downloading image: ', error);
+    }
+  }
+
+  useEffect(() => {
+    getProfile();
+  }, [session]);
+
+  async function getProfile() {
+    try {
+      setLoading(true);
+
+      let { data, error, status } = await supabase
+        .from('enivprofiles')
+        .select(`username, full_name, avatar_url, role`)
+        .filter('id', 'eq', user?.id)
+        .single();
+      if (error && status !== 406) {
+        throw error;
+      }
+
+      if (data) {
+        setRole(data.role);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const containerRef = useRef<HTMLDivElement>(null);
   const isOnScreen = useElementOnScreen(defaultIoOptions, containerRef);
   const [hasVoted, setHasVoted] = useState(false);
@@ -36,6 +106,14 @@ export default function VideoPlayOnVisible({ video }: { video: HygraphVideoMetad
 
     setFHasVoted(true);
   };
+
+  const adminVerifyClicked = () => {
+    setIsModeratorOverriden(true);
+    updateVideoVerified(video, !isModeratorApproved);
+    setIsModeratorApproved(!isModeratorApproved);
+  };
+
+  const veryfied = isModeratorOverriden ? isModeratorApproved : video.verified;
 
   return (
     <Card
@@ -78,11 +156,39 @@ export default function VideoPlayOnVisible({ video }: { video: HygraphVideoMetad
           <Text weight={500}>{capitalizeFirstLetter(video.title)}</Text>
           <Divider orientation="vertical" />
           <Text fs="italic" size="sm" color="dimmed">
-            Uploaded on {new Date(video.createdAt).toLocaleDateString()}
+            Uploaded on {new Date(video.createdAt).toLocaleDateString()}{' '}
+            <HoverCard width={280} shadow="md" position="top">
+              <HoverCard.Target>
+                <span>{video.uploaderName ? `by ${video.uploaderName}` : ''}</span>
+              </HoverCard.Target>
+              <HoverCard.Dropdown>
+                <div>
+                  <Center>
+                    {videoUploaderAvatarUrl ? (
+                      <img
+                        src={videoUploaderAvatarUrl}
+                        style={{
+                          borderRadius: '10rem',
+                          width: '50%',
+                          height: '50%',
+                        }}
+                      />
+                    ) : (
+                      ''
+                    )}
+                  </Center>
+                  <Center>
+                    <Text fs="initial" size={30} color={colorScheme === 'dark' ? 'white' : 'black'}>
+                      {video.uploaderName}
+                    </Text>
+                  </Center>
+                </div>
+              </HoverCard.Dropdown>
+            </HoverCard>
           </Text>
         </Group>
-        <Badge color={video.verified ? 'green' : 'red'} variant="light">
-          {video.verified ? 'Verified' : 'Not Verified'}
+        <Badge color={veryfied ? 'green' : 'red'} variant="light">
+          {veryfied ? 'Verified' : 'Not Verified'}
         </Badge>
       </Group>
 
@@ -99,6 +205,25 @@ export default function VideoPlayOnVisible({ video }: { video: HygraphVideoMetad
           }}
         />
         <Group spacing={0}>
+          {role === 'admin' ? (
+            <>
+              <Button
+                onClick={adminVerifyClicked}
+                compact
+                variant="subtle"
+                color={veryfied ? 'green' : 'red'}
+              >
+                {veryfied ? (
+                  <IconCheck style={{ paddingRight: '0.2rem' }} />
+                ) : (
+                  <IconX style={{ paddingRight: '0.2rem' }} />
+                )}
+                {veryfied ? 'Verified' : 'Unverified'}
+              </Button>
+            </>
+          ) : (
+            ''
+          )}
           <Button onClick={voteUpClicked} compact variant="subtle">
             <IconCaretUp />
             {video.upvotes + (hasVoted ? 1 : 0)}

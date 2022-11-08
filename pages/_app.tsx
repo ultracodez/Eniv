@@ -11,6 +11,7 @@ import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import { AuthSession } from '@supabase/supabase-js';
 import { useRouter } from 'next/router';
+import { ModalsProvider } from '@mantine/modals';
 
 export default function App(
   props: AppProps & { colorScheme: ColorScheme; initialSession: AuthSession }
@@ -19,7 +20,6 @@ export default function App(
   const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
   const router = useRouter();
-
 
   const toggleColorScheme = (value?: ColorScheme) => {
     const nextColorScheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
@@ -35,26 +35,29 @@ export default function App(
         <link rel="shortcut icon" href="/favicon.svg" />
       </Head>
 
-      <SessionContextProvider supabaseClient={supabaseClient} initialSession={props.initialSession}>
-        <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-          <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
-            <NotificationsProvider>
-              <Header extraProps={pageProps} />
-              {getDisplayName(Component) === 'Page404' ? 
-              null : 
-              <div style={{ height: '5rem' }}>aaa</div>
-         }
-            <Component {...pageProps} />
-            </NotificationsProvider>
-          </MantineProvider>
-        </ColorSchemeProvider>
-      </SessionContextProvider>
+      <ModalsProvider>
+        <SessionContextProvider
+          supabaseClient={supabaseClient}
+          initialSession={props.initialSession}
+        >
+          <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+            <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
+              <NotificationsProvider>
+                <Header extraProps={pageProps} />
+                {['Page404', 'ModSettings'].includes(getDisplayName(Component)) ? null : (
+                  <div style={{ height: '5rem' }}>aaa</div>
+                )}
+                <Component {...pageProps} />
+              </NotificationsProvider>
+            </MantineProvider>
+          </ColorSchemeProvider>
+        </SessionContextProvider>
+      </ModalsProvider>
     </>
   );
 }
 
-
-function getDisplayName(WrappedComponent:any) {
+function getDisplayName(WrappedComponent: any) {
   return WrappedComponent.displayName || WrappedComponent.name || 'Component';
 }
 

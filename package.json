@@ -32,6 +32,7 @@
     "@mantine/dropzone": "latest",
     "@mantine/form": "latest",
     "@mantine/hooks": "latest",
+    "@mantine/modals": "^5.7.1",
     "@mantine/next": "latest",
     "@mantine/notifications": "latest",
     "@mantine/prism": "latest",

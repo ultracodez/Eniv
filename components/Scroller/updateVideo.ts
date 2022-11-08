@@ -36,6 +36,34 @@ export async function updateVideoVotes(video: HygraphVideoMetadata, newUpvotes: 
   //alert(JSON.stringify(res));
 }
 
+export async function updateVideoVerified(
+  video: HygraphVideoMetadata,
+  newVerificationLevel: boolean
+) {
+  const res = await hygraph.request(`
+  mutation getAndUpdateVideos() {
+    updateVideo(data:{verified:${newVerificationLevel}} where:{cloudinaryId:"${video.cloudinaryId}"}) {
+      upvotes
+    }
+  }
+  `);
+  await hygraph.request(
+    `
+  mutation PublishVideo($cid:String) {
+    publishVideo(
+      where: {cloudinaryId: $cid}
+      to: PUBLISHED
+    ) {
+      cloudinaryId
+      stage
+    }
+  }
+  `,
+    { cid: video.cloudinaryId }
+  );
+  //alert(JSON.stringify(res));
+}
+
 export async function updateVideoViews(video: HygraphVideoMetadata) {
   const res = await hygraph.request(`
   mutation getAndUpdateVideos() {
